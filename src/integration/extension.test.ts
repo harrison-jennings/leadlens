@@ -523,6 +523,36 @@ suite("the extension in a real editor", () => {
     }
   });
 
+  test("include patterns are relative to the workspace folder", async () => {
+    // The documented form, `emails/**/*.html`, names a folder in the project.
+    // Matched against the absolute path it never matched anything, so a
+    // narrowed `include` silently switched Leadlens off.
+    const workspace = vscode.workspace.workspaceFolders?.[0];
+    assert.ok(workspace, "the integration workspace is not open");
+    const emails = join(workspace!.uri.fsPath, "emails");
+    mkdirSync(emails, { recursive: true });
+    const included = join(emails, "include.html");
+    const excluded = join(workspace!.uri.fsPath, "not-included.html");
+    writeFileSync(included, EMAIL);
+    writeFileSync(excluded, EMAIL);
+    const config = vscode.workspace.getConfiguration("leadlens");
+    try {
+      await config.update("include", ["emails/**/*.html"], vscode.ConfigurationTarget.Global);
+      const document = await vscode.workspace.openTextDocument(included);
+      await vscode.window.showTextDocument(document);
+      await waitFor(() => leadlensDiagnostics(document.uri).length > 0);
+
+      const other = await vscode.workspace.openTextDocument(excluded);
+      await vscode.window.showTextDocument(other);
+      await new Promise((resolve) => setTimeout(resolve, 1_000));
+      assert.equal(leadlensDiagnostics(other.uri).length, 0, "a file outside the pattern was linted");
+    } finally {
+      await config.update("include", undefined, vscode.ConfigurationTarget.Global);
+      rmSync(emails, { recursive: true, force: true });
+      rmSync(excluded, { force: true });
+    }
+  });
+
   test("Marketo syntax replaces generic token errors and keeps source positions", async () => {
     const source = [
       '<html lang="en"><head><meta charset="utf-8"><title>Marketo</title>',

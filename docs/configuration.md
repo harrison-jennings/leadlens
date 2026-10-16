@@ -7,7 +7,7 @@ Leadlens works without configuration. Settings let you choose which files and cl
 | Setting | Default | Description |
 |---|---|---|
 | `leadlens.enable` | `true` | Lint HTML and MJML emails. |
-| `leadlens.include` | `["**/*.html", "**/*.htm", "**/*.mjml"]` | Glob patterns for the files to lint. Narrow this in projects that also contain HTML that isn't email, for example `["emails/**/*.html"]`. |
+| `leadlens.include` | `["**/*.html", "**/*.htm", "**/*.mjml"]` | Glob patterns for the files to lint. Narrow this in projects that also contain HTML that isn't email, for example `["emails/**/*.html"]`. Patterns are relative to the workspace folder, as in `files.exclude`. |
 | `leadlens.run` | `"onType"` | Lint as you type (`onType`) or only when you save (`onSave`). |
 | `leadlens.clients` | `[]` | Client IDs to report on. Empty means all 21. See [Previews](previews.md#clients) for the IDs. |
 | `leadlens.skip` | `[]` | Check categories to skip. See [Linting](linting.md#whats-checked) for the IDs. |
