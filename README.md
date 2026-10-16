@@ -8,7 +8,7 @@
 [![MIT licence](https://img.shields.io/badge/licence-MIT-0E8F80?labelColor=121A2B)](https://github.com/harrison-jennings/leadlens/blob/main/LICENSE)
 [![Website](https://img.shields.io/badge/website-leadlens.harrisonjennings.au-0E8F80?labelColor=121A2B)](https://leadlens.harrisonjennings.au)
 
-![Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic and its explanation, beside the email previewed in Gmail, Outlook Classic with a square button, and Apple Mail iOS in dark mode](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-product.png)
+![Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic and its explanation, beside the email previewed in Gmail, Outlook Classic with the button reduced to highlighted text, and Apple Mail iOS in dark mode](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-product.png)
 
 Leadlens shows how your email will look across 21 email clients as you type, flags what will break before it ships, and understands Marketo Email Editor 2.0, including variables, modules, editable regions and tokens. You get answers about your actual template, not false alarms about Marketo syntax.
 
