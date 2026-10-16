@@ -5,7 +5,7 @@
 [![Version](https://img.shields.io/github/v/release/harrison-jennings/leadlens?display_name=release&label=version&labelColor=121A2B&color=0E8F80)](https://github.com/harrison-jennings/leadlens/releases/latest)
 [![Emailens engine](https://img.shields.io/github/package-json/dependency-version/harrison-jennings/leadlens/@emailens/engine?label=emailens%20engine&labelColor=121A2B&color=0E8F80)](https://github.com/emailens/engine)
 [![VS Code 1.90 or later](https://img.shields.io/badge/VS%20Code-1.90%2B-0E8F80?labelColor=121A2B)](https://code.visualstudio.com)
-[![MIT licence](https://img.shields.io/github/license/harrison-jennings/leadlens?label=licence&labelColor=121A2B&color=0E8F80)](https://github.com/harrison-jennings/leadlens/blob/main/LICENSE)
+[![MIT licence](https://img.shields.io/badge/licence-MIT-0E8F80?labelColor=121A2B)](https://github.com/harrison-jennings/leadlens/blob/main/LICENSE)
 [![Website](https://img.shields.io/badge/website-leadlens.harrisonjennings.au-0E8F80?labelColor=121A2B)](https://leadlens.harrisonjennings.au)
 
 ![Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic and its explanation, beside the email previewed in Gmail, Outlook Classic with a square button, and Apple Mail iOS in dark mode](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-product.png)
