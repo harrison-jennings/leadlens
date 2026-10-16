@@ -1,20 +1,22 @@
 ---
 // An illustration of Leadlens in VS Code: the Fernway sample template without
-// its Outlook VML button, with a finding, its hover, the Problems list and
-// client previews. Its findings, line numbers and scores match what Leadlens
-// reports for that file, and Outlook Classic really renders the button square.
+// its Outlook VML button, with a finding, its hover, part of the Problems list
+// and client previews. The findings shown, their line numbers and the scores
+// are what Leadlens reports for that file. The button matches the simulation:
+// Outlook Classic strips its display, padding and border-radius, leaving only
+// the background colour behind the text.
 // Wide screens get the full window; narrow screens a compact version of the
 // same story. It's decorative, so screen readers get one summary instead.
 
 const cards = [
-  { name: "Gmail", mode: "light", score: "94", badge: "#3FD6C1", theme: "light", radius: "24px" },
-  { name: "Outlook Classic", mode: "light", score: "76", badge: "#F2B544", theme: "light", radius: "0" },
-  { name: "Apple Mail iOS", mode: "dark", score: "100", badge: "#3FD6C1", theme: "dark", radius: "24px" },
+  { name: "Gmail", mode: "light", score: "94", badge: "#3FD6C1", theme: "light", button: "border-radius:24px" },
+  { name: "Outlook Classic", mode: "light", score: "76", badge: "#F2B544", theme: "light", button: "display:inline;padding:0;border-radius:0" },
+  { name: "Apple Mail iOS", mode: "dark", score: "100", badge: "#3FD6C1", theme: "dark", button: "border-radius:24px" },
 ];
 const compactCards = [cards[0], cards[1]];
 ---
 
-<figure class="shot-frame" aria-label="Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic, its explanation, and the email previewed in Gmail, Outlook Classic and Apple Mail iOS dark mode.">
+<figure class="shot-frame" aria-label="Leadlens in VS Code: a Marketo template with padding and border-radius warnings for Outlook Classic and an explanation, beside the email previewed in Gmail, Outlook Classic and Apple Mail iOS dark mode. In Outlook Classic the button is reduced to highlighted text.">
   <div class="window shot-full" aria-hidden="true">
     <div class="window-bar">
       <span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span>
@@ -29,7 +31,7 @@ const compactCards = [cards[0], cards[1]];
         <div class="code-line"><span class="ln">101</span><span><span class="t-punct">&lt;</span><span class="t-tag">tr</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">102</span><span>  <span class="t-punct">&lt;</span><span class="t-tag">td</span> <span class="t-attr">align</span>=<span class="t-str">"center"</span> <span class="t-attr">style</span>=<span class="t-str">"padding:16px 40px 40px;"</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">103</span><span>    <span class="t-punct">&lt;</span><span class="t-tag">a</span> <span class="t-attr">href</span>=<span class="t-str">"<span class="t-var">{"${buttonLink}"}</span>"</span></span></div>
-        <div class="code-line"><span class="ln">104</span><span>       <span class="t-attr">style</span>=<span class="t-str">"display:inline-block; padding:14px 32px;</span></span></div>
+        <div class="code-line"><span class="ln">104</span><span>       <span class="t-attr">style</span>=<span class="t-str">"display:inline-block; <span class="squiggle">padding:14px 32px;</span></span></span></div>
         <div class="code-line flagged"><span class="ln">105</span><span><span class="t-str">       <span class="squiggle">border-radius:24px;</span></span></span></div>
         <div class="code-line"><span class="ln">106</span><span><span class="t-str">       background-color:<span class="t-var">{"${accentColor}"}</span>; color:#FFFFFF;"</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">107</span><span>      <span class="t-var">{"${buttonText}"}</span></span></div>
@@ -42,10 +44,10 @@ const compactCards = [cards[0], cards[1]];
           <div class="fix">Quick fix: silence with a reason</div>
         </div>
         <div class="problems">
-          <div class="problems-title">Problems · 3</div>
-          <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
+          <div class="problems-title">Problems</div>
           <div class="problem"><span class="sev-warn">▲</span>@media prefers-color-scheme · Gmail, Outlook Classic<span class="line">30</span></div>
-          <div class="problem"><span class="sev-info">●</span>Token has no local value · system.unsubscribeLink<span class="line">123</span></div>
+          <div class="problem"><span class="sev-warn">▲</span>padding · Outlook Classic<span class="line">104</span></div>
+          <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
         </div>
       </div>
       <div class="previews">
@@ -73,7 +75,7 @@ const compactCards = [cards[0], cards[1]];
                       <img src="/generated/sample/route.webp" alt="" width="280" height="175" loading="lazy" />
                       <img src="/generated/sample/kit.webp" alt="" width="280" height="175" loading="lazy" />
                     </div>
-                    <span class="mini-email-button" style={`border-radius:${card.radius}`}>Read the field notes</span>
+                    <span class="mini-email-button" style={card.button}>Read the field notes</span>
                   </div>
                 </div>
               </div>
@@ -91,7 +93,7 @@ const compactCards = [cards[0], cards[1]];
     </div>
     <div class="editor">
       <div class="code-line"><span class="ln">103</span><span><span class="t-punct">&lt;</span><span class="t-tag">a</span> <span class="t-attr">href</span>=<span class="t-str">"<span class="t-var">{"${buttonLink}"}</span>"</span></span></div>
-      <div class="code-line"><span class="ln">104</span><span>  <span class="t-attr">style</span>=<span class="t-str">"padding:14px 32px;</span></span></div>
+      <div class="code-line"><span class="ln">104</span><span>  <span class="t-attr">style</span>=<span class="t-str">"<span class="squiggle">padding:14px 32px;</span></span></span></div>
       <div class="code-line flagged"><span class="ln">105</span><span><span class="t-str">  <span class="squiggle">border-radius:24px;</span></span></span></div>
       <div class="code-line"><span class="ln">106</span><span><span class="t-str">  background:<span class="t-var">{"${accentColor}"}</span>;"</span><span class="t-punct">&gt;</span></span></div>
       <div class="code-line"><span class="ln">107</span><span>  <span class="t-var">{"${buttonText}"}</span></span></div>
@@ -102,8 +104,8 @@ const compactCards = [cards[0], cards[1]];
       </div>
       <div class="problems">
         <div class="problems-title">Problems</div>
+        <div class="problem"><span class="sev-warn">▲</span>padding · Outlook Classic<span class="line">104</span></div>
         <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
-        <div class="problem"><span class="sev-warn">▲</span>@media prefers-color-scheme · Gmail, Outlook Classic<span class="line">30</span></div>
       </div>
     </div>
     <div class="previews">
@@ -117,7 +119,7 @@ const compactCards = [cards[0], cards[1]];
                 <img src="/generated/sample/hero.webp" alt="" width="640" height="277" loading="lazy" />
                 <div class="mini-email-body">
                   <div class="mini-email-title">Autumn field notes</div>
-                  <span class="mini-email-button" style={`border-radius:${card.radius}`}>Read the field notes</span>
+                  <span class="mini-email-button" style={card.button}>Read the field notes</span>
                 </div>
               </div>
             </div>
