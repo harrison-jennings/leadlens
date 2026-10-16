@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import * as vscode from "vscode";
 import { VML_COMPONENT } from "../__tests__/fixtures/diagnostics";
-import { resolveLocalAssetForPreview } from "../preview/local-asset-resolver";
+import { MAX_LOCAL_ASSET_BYTES, resolveLocalAssetForPreview } from "../preview/local-asset-resolver";
 
 /**
  * The layer the unit tests cannot reach.
@@ -255,32 +255,24 @@ suite("the extension in a real editor", () => {
     const outside = join(folder, "outside.png");
     mkdirSync(directory, { recursive: true });
     writeFileSync(join(directory, "hero.png"), "image");
+    writeFileSync(join(directory, "huge.png"), Buffer.alloc(MAX_LOCAL_ASSET_BYTES + 1));
     writeFileSync(outside, "outside");
     symlinkSync(outside, join(directory, "linked.png"));
     const owner = vscode.Uri.file(join(directory, "email.html"));
-    const webview = {
-      asWebviewUri(resource: vscode.Uri) {
-        return resource.with({ scheme: "https", authority: "webview.test" });
-      },
-    } as vscode.Webview;
 
-    const resolved = resolveLocalAssetForPreview("hero.png?cache=1#top", owner, webview);
+    // Embedded, because the sandboxed email frame can't load webview resource
+    // URLs: VS Code's resource loader doesn't serve an opaque-origin frame.
+    const resolved = resolveLocalAssetForPreview("hero.png?cache=1#top", owner);
     assert.equal(resolved.resolution.status, "resolved");
-    assert.match(resolved.resolution.uri ?? "", /^https:\/\/webview\.test\//);
-    assert.match(resolved.resolution.uri ?? "", /\?cache=1#top$/);
+    assert.equal(
+      resolved.resolution.uri,
+      `data:image/png;base64,${Buffer.from("image").toString("base64")}#top`,
+    );
 
-    assert.equal(
-      resolveLocalAssetForPreview("missing.png", owner, webview).resolution.status,
-      "missing",
-    );
-    assert.equal(
-      resolveLocalAssetForPreview("../outside.png", owner, webview).resolution.status,
-      "blocked",
-    );
-    assert.equal(
-      resolveLocalAssetForPreview("linked.png", owner, webview).resolution.status,
-      "blocked",
-    );
+    assert.equal(resolveLocalAssetForPreview("missing.png", owner).resolution.status, "missing");
+    assert.equal(resolveLocalAssetForPreview("huge.png", owner).resolution.status, "missing");
+    assert.equal(resolveLocalAssetForPreview("../outside.png", owner).resolution.status, "blocked");
+    assert.equal(resolveLocalAssetForPreview("linked.png", owner).resolution.status, "blocked");
   });
 
   test("the preview follows the email you switch to", async () => {

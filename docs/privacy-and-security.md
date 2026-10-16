@@ -19,6 +19,7 @@ Emails often contain tracking pixels, links with personal identifiers and conten
 
 - The preview can show images from your computer only when they're referenced by a relative path and the file is inside the email's workspace folder, or beside a template you've chosen yourself.
 - Paths that try to leave those folders, including through symbolic links, are blocked and labelled in the preview.
+- Leadlens reads each allowed image itself and embeds it in the preview, so the preview has no access to your files of its own.
 
 ## Your source is never changed
 

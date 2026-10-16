@@ -38,7 +38,6 @@ import type { MarketoPreviewModel, PreviewValueChange } from "../marketo-preview
  */
 let panel: vscode.WebviewPanel | undefined;
 let source: vscode.TextDocument | undefined;
-let localRootKey = "";
 let state: PreviewState = {
   clientId: "gmail-web",
   comparisonMode: false,
@@ -158,8 +157,8 @@ export function open(document: vscode.TextDocument, context: vscode.ExtensionCon
     "leadlens.preview",
     "Leadlens Preview",
     { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
-    // Local roots are added only when a preview contains a path that resolves
-    // inside its workspace (or beside an explicitly selected external file).
+    // No local resource roots: allowed local images are embedded as data URLs
+    // (see local-asset-resolver.ts), so the webview never reads files itself.
     { enableScripts: true, localResourceRoots: [] },
   );
   panel.iconPath = {
@@ -171,7 +170,6 @@ export function open(document: vscode.TextDocument, context: vscode.ExtensionCon
     () => {
       panel = undefined;
       source = undefined;
-      localRootKey = "";
     },
     undefined,
     context.subscriptions,
@@ -360,15 +358,7 @@ export function render(full = false) {
     return;
   }
 
-  const assets = preparePreviewAssets(resolved.html, source, resolved.segments, panel.webview);
-  const rootsKey = assets.roots.map((root) => root.toString()).sort().join("\n");
-  if (rootsKey !== localRootKey) {
-    panel.webview.options = { enableScripts: true, localResourceRoots: assets.roots };
-    localRootKey = rootsKey;
-    // Changing resource roots reloads the webview; rebuild its document so the
-    // update cannot race the new page's message listener.
-    full = true;
-  }
+  const assets = preparePreviewAssets(resolved.html, source, resolved.segments);
 
   const cardMode = state.comparisonMode || state.appearanceComparison;
   const clientIds = state.comparisonMode ? state.comparisonClientIds : [state.clientId];
@@ -420,7 +410,6 @@ export function render(full = false) {
       marketo: resolved.marketo,
       compositionLabel: resolved.compositionLabel,
       sourceLabel: source.uri.path.split("/").pop() || source.fileName,
-      localResourceSource: panel.webview.cspSource,
       localAssets: assets.summary,
     });
     return;
@@ -476,23 +465,17 @@ export function dispose() {
   panel?.dispose();
   panel = undefined;
   source = undefined;
-  localRootKey = "";
 }
 
 function preparePreviewAssets(
   html: string,
   document: vscode.TextDocument,
   segments: Segment[] | undefined,
-  webview: vscode.Webview,
 ) {
-  const roots = new Map<string, vscode.Uri>();
-  const prepared = prepareLocalAssets(html, (reference) => {
+  return prepareLocalAssets(html, (reference) => {
     const owner = ownerFor(reference, document.uri, segments);
-    const resolved = resolveLocalAssetForPreview(reference.value, owner, webview);
-    if (resolved.root) roots.set(resolved.root.toString(), resolved.root);
-    return resolved.resolution;
+    return resolveLocalAssetForPreview(reference.value, owner).resolution;
   });
-  return { ...prepared, roots: [...roots.values()] };
 }
 
 function ownerFor(reference: LocalAssetReference, fallback: vscode.Uri, segments?: Segment[]): vscode.Uri {
