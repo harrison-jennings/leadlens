@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { isAbsolute } from "node:path";
 import { affectsSettings, setting } from "./configuration";
 import { auditEmail, EMAIL_CLIENTS, MAX_HTML_SIZE } from "@emailens/engine";
 import type { AuditOptions, AuditReport } from "@emailens/engine";
@@ -449,10 +450,15 @@ function shouldLint(document: vscode.TextDocument): boolean {
 
   // VS Code's own glob engine, rather than a hand-rolled matcher or a
   // dependency: a DocumentFilter pattern is matched the same way `files.exclude`
-  // and every other setting in the editor is.
-  return patterns.some(
-    (pattern) => vscode.languages.match({ pattern, scheme: document.uri.scheme }, document) > 0,
-  );
+  // and every other setting in the editor is. A plain string pattern is matched
+  // against the absolute path, so `emails/**/*.html` would never match; inside
+  // a workspace folder, patterns are relative to that folder, as in
+  // `files.exclude`.
+  const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+  return patterns.some((pattern) => {
+    const glob = folder && !isAbsolute(pattern) ? new vscode.RelativePattern(folder, pattern) : pattern;
+    return vscode.languages.match({ pattern: glob, scheme: document.uri.scheme }, document) > 0;
+  });
 }
 
 function schedule(document: vscode.TextDocument) {

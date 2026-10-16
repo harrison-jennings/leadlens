@@ -37,6 +37,10 @@ The first release of Leadlens: email preview and linting for Adobe Marketo Engag
 
 - Licence notices for every bundled open-source component, and for the caniemail compatibility data, are installed with the extension in `THIRD_PARTY_NOTICES.md`.
 
+### Fixes
+
+- `include` patterns that name a folder, such as `emails/**/*.html`, now match files in that folder. They are relative to the workspace folder; previously such a pattern matched nothing, so Leadlens ignored every file.
+
 ### Known limitations
 
 - Previews simulate each client's documented behaviour; they are not screenshots from the real applications.
