@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // What F5 waits for. Without it, launching loads whatever `out/` happened
+      // to contain from the last manual build, which is the most confusing
+      // possible failure: your change is in the editor and not in the host.
+      "label": "watch",
+      "type": "shell",
+      "command": "node build.mjs --watch",
+      "isBackground": true,
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "never", "panel": "dedicated" },
+      "problemMatcher": {
+        "owner": "esbuild",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.*):(\\d+):(\\d+): (error|warning): (.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "message": 5
+        },
+        // `build.mjs` prints these itself rather than relying on esbuild's own
+        // watch logging, which is not a stable contract.
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^\\[watch\\] build started$",
+          "endsPattern": "^\\[watch\\] build finished"
+        }
+      }
+    },
+    {
+      "label": "typecheck",
+      "type": "shell",
+      "command": "bun run typecheck",
+      "problemMatcher": "$tsc",
+      "group": "build"
+    },
+    {
+      "label": "test",
+      "type": "shell",
+      "command": "bun test src/__tests__",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": []
+    }
+  ]
+}

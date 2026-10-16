@@ -1,0 +1,38 @@
+---
+import { DOWNLOAD_URL, PORTFOLIO_URL, REPO_URL, TAGLINE, TRADEMARK_NOTICE } from "../data/site.mjs";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="wordmark">lead<span class="dot">.</span>lens</span>
+        <p>{TAGLINE}</p>
+      </div>
+      <div class="footer-columns">
+        <nav class="footer-column" aria-labelledby="footer-product">
+          <h2 id="footer-product">Product</h2>
+          <a href={DOWNLOAD_URL}>Download</a>
+          <a href="/docs/">Documentation</a>
+          <a href="/changelog/">Changelog</a>
+        </nav>
+        <nav class="footer-column" aria-labelledby="footer-project">
+          <h2 id="footer-project">Project</h2>
+          <a href={REPO_URL}>GitHub</a>
+          <a href={`${REPO_URL}/blob/main/LICENSE`}>Licence</a>
+          <a href={`${REPO_URL}/security`}>Security</a>
+        </nav>
+        <nav class="footer-column" aria-labelledby="footer-about">
+          <h2 id="footer-about">About</h2>
+          <a href="/privacy/">Privacy</a>
+          <a href={PORTFOLIO_URL}>harrisonjennings.au</a>
+        </nav>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <p>Built on the open-source Emailens engine. © {year} Harrison Jennings.</p>
+      <p>{TRADEMARK_NOTICE}</p>
+    </div>
+  </div>
+</footer>

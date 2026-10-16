@@ -1,0 +1,36 @@
+---
+import LogoMark from "./LogoMark.astro";
+import { DOWNLOAD_URL, REPO_URL } from "../data/site.mjs";
+
+interface Props {
+  tone?: "dark" | "light";
+  current?: "docs" | "changelog";
+}
+const { tone = "dark", current } = Astro.props;
+---
+
+<header class={`site-header ${tone}`}>
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="Leadlens home">
+      <LogoMark tile={tone === "dark" ? "#1B2640" : "#121A2B"} />
+      <span class="wordmark" aria-hidden="true">lead<span class="dot">.</span>lens</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="/docs/">Docs</a>
+      <a href="/changelog/" aria-current={current === "changelog" ? "page" : undefined}>Changelog</a>
+      <a href={REPO_URL}>GitHub</a>
+      <a class="nav-download" href={DOWNLOAD_URL}>Download</a>
+    </nav>
+    <details class="nav-menu">
+      <summary aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg>
+      </summary>
+      <nav class="nav-links" aria-label="Main">
+        <a href="/docs/">Docs</a>
+        <a href="/changelog/">Changelog</a>
+        <a href={REPO_URL}>GitHub</a>
+        <a class="nav-download" href={DOWNLOAD_URL}>Download</a>
+      </nav>
+    </details>
+  </div>
+</header>

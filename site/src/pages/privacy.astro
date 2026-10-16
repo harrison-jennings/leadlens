@@ -1,0 +1,32 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+---
+
+<Marketing title="Privacy · Leadlens" description="What this website and the Leadlens extension collect.">
+  <div class="page">
+    <SiteHeader tone="light" />
+    <main class="page-main" id="main">
+      <div class="container">
+        <div class="page-intro">
+          <h1>Privacy</h1>
+          <p class="lede">The Leadlens extension and this website are separate, so they're described separately.</p>
+        </div>
+        <div class="prose">
+          <h2>The Leadlens extension</h2>
+          <p>Leadlens has no telemetry and no accounts, and makes no network requests of its own. All analysis and every preview runs on your computer, and it never connects to Marketo or any other email platform. Remote images in previews stay blocked until you allow them.</p>
+          <p>The <a href="/docs/privacy-and-security/">privacy and security guide</a> describes how previews are sandboxed and which local files they can read.</p>
+
+          <h2>This website</h2>
+          <p>The site counts visits with Vercel Web Analytics, which records page views and general information such as the referring site, country and device type. It doesn't use cookies, doesn't build a profile of you across sites, and doesn't collect personal information.</p>
+          <p>The site is hosted on Vercel, which keeps standard server logs to run and protect the service. Fonts and images are served from this site; nothing loads from third-party services. Downloads come from GitHub, under GitHub's own privacy statement.</p>
+
+          <h2>Contact</h2>
+          <p>Questions about privacy can be raised as an issue on the project's <a href="https://github.com/harrison-jennings/leadlens/issues">GitHub repository</a>.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <SiteFooter />
+</Marketing>

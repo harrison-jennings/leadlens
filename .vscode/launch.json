@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // The dev loop. Opens `samples/` as the host's workspace folder, because
+      // an extension that lints email is untestable without an email, and
+      // several of its decisions — the project config, resolving the
+      // workspace's own MJML compiler, a stylesheet a document links to — only
+      // exist when a folder is open.
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "${workspaceFolder}/samples",
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--disable-extensions"
+      ],
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "watch"
+    },
+    {
+      // The same, with no folder open. Worth having as its own entry: a
+      // single loose file is a real way people use an editor, and it is the
+      // path where an `.mjml` template has no workspace to find a compiler in
+      // and has to say so rather than fail silently.
+      "name": "Run Extension (no folder)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--disable-extensions"
+      ],
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "watch"
+    }
+  ]
+}

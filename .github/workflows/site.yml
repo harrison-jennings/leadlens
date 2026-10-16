@@ -1,0 +1,46 @@
+name: Site
+
+# Builds the website whenever it, or the documentation it publishes, changes.
+# Vercel deploys it; this catches a broken build in the pull request itself.
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", "docs/**", "CHANGELOG.md", "samples/images/**", "package.json", ".github/workflows/site.yml"]
+  pull_request:
+    paths: ["site/**", "docs/**", "CHANGELOG.md", "samples/images/**", "package.json", ".github/workflows/site.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build the website
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v7
+
+      # Third-party, so pinned to a reviewed commit; Dependabot moves the pin.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.2"
+
+      - run: bun install --frozen-lockfile
+
+      # Fails if a docs page links somewhere the site can't publish.
+      - run: bun run build
+
+      # Both page layouts must count visits, and nothing may block indexing.
+      - name: Check analytics and indexing
+        run: |
+          grep -q '<vercel-analytics' dist/index.html
+          grep -q '<vercel-analytics' dist/docs/index.html
+          ! grep -q 'noindex' dist/index.html dist/docs/index.html
+          grep -q 'Sitemap:' dist/robots.txt
+          echo "analytics on both layouts; pages indexable"

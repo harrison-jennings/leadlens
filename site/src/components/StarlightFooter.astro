@@ -1,0 +1,9 @@
+---
+// Docs pages are rendered by Starlight, not the marketing layout, so they need
+// their own copy of the page-view counter. It sits after the default footer.
+import Default from "@astrojs/starlight/components/Footer.astro";
+import Analytics from "@vercel/analytics/astro";
+---
+
+<Default />
+<Analytics />

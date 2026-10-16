@@ -1,0 +1,20 @@
+name: Feature request
+description: Suggest an improvement to Leadlens.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the task or problem, not just the solution you have in mind.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help?
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Examples, screenshots or links to client documentation.

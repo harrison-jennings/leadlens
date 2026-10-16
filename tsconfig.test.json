@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "out-test",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "noUnusedLocals": false,
+    "types": [
+      "node",
+      "mocha",
+      "vscode"
+    ]
+  },
+  "include": [
+    "src/integration"
+  ],
+  "exclude": []
+}

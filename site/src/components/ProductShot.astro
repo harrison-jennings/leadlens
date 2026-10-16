@@ -1,0 +1,136 @@
+---
+// An illustration of Leadlens in VS Code: the Fernway sample template without
+// its Outlook VML button, with a finding, its hover, the Problems list and
+// client previews. Its findings, line numbers and scores match what Leadlens
+// reports for that file, and Outlook Classic really renders the button square.
+// Wide screens get the full window; narrow screens a compact version of the
+// same story. It's decorative, so screen readers get one summary instead.
+
+const cards = [
+  { name: "Gmail", mode: "light", score: "94", badge: "#3FD6C1", theme: "light", radius: "24px" },
+  { name: "Outlook Classic", mode: "light", score: "76", badge: "#F2B544", theme: "light", radius: "0" },
+  { name: "Apple Mail iOS", mode: "dark", score: "100", badge: "#3FD6C1", theme: "dark", radius: "24px" },
+];
+const compactCards = [cards[0], cards[1]];
+---
+
+<figure class="shot-frame" aria-label="Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic, its explanation, and the email previewed in Gmail, Outlook Classic and Apple Mail iOS dark mode.">
+  <div class="window shot-full" aria-hidden="true">
+    <div class="window-bar">
+      <span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span>
+      <span class="window-tab active">fernway-newsletter.html</span>
+      <span class="window-tab">
+        <svg width="13" height="13" viewBox="16 16 96 96"><path d="M46 30 C37 30 35 36 35 44 L35 54 C35 60 31 64 25 64 C31 64 35 68 35 74 L35 84 C35 92 37 98 46 98" fill="none" stroke="#C9D2DE" stroke-width="13" stroke-linecap="round"></path><path d="M82 30 C91 30 93 36 93 44 L93 54 C93 60 97 64 103 64 C97 64 93 68 93 74 L93 84 C93 92 91 98 82 98" fill="none" stroke="#C9D2DE" stroke-width="13" stroke-linecap="round"></path><circle cx="64" cy="64" r="15" fill="#3FD6C1"></circle></svg>
+        Leadlens — 3 clients · 600 px
+      </span>
+    </div>
+    <div class="window-body">
+      <div class="editor">
+        <div class="code-line"><span class="ln">101</span><span><span class="t-punct">&lt;</span><span class="t-tag">tr</span><span class="t-punct">&gt;</span></span></div>
+        <div class="code-line"><span class="ln">102</span><span>  <span class="t-punct">&lt;</span><span class="t-tag">td</span> <span class="t-attr">align</span>=<span class="t-str">"center"</span> <span class="t-attr">style</span>=<span class="t-str">"padding:16px 40px 40px;"</span><span class="t-punct">&gt;</span></span></div>
+        <div class="code-line"><span class="ln">103</span><span>    <span class="t-punct">&lt;</span><span class="t-tag">a</span> <span class="t-attr">href</span>=<span class="t-str">"<span class="t-var">{"${buttonLink}"}</span>"</span></span></div>
+        <div class="code-line"><span class="ln">104</span><span>       <span class="t-attr">style</span>=<span class="t-str">"display:inline-block; padding:14px 32px;</span></span></div>
+        <div class="code-line flagged"><span class="ln">105</span><span><span class="t-str">       <span class="squiggle">border-radius:24px;</span></span></span></div>
+        <div class="code-line"><span class="ln">106</span><span><span class="t-str">       background-color:<span class="t-var">{"${accentColor}"}</span>; color:#FFFFFF;"</span><span class="t-punct">&gt;</span></span></div>
+        <div class="code-line"><span class="ln">107</span><span>      <span class="t-var">{"${buttonText}"}</span></span></div>
+        <div class="code-line"><span class="ln">108</span><span>    <span class="t-punct">&lt;/</span><span class="t-tag">a</span><span class="t-punct">&gt;</span></span></div>
+        <div class="code-line"><span class="ln">109</span><span>  <span class="t-punct">&lt;/</span><span class="t-tag">td</span><span class="t-punct">&gt;</span></span></div>
+        <div class="code-line"><span class="ln">110</span><span><span class="t-punct">&lt;/</span><span class="t-tag">tr</span><span class="t-punct">&gt;</span></span></div>
+        <div class="hover-card">
+          <div class="rule">border-radius</div>
+          Not supported in <strong>Outlook Classic</strong>, so the button's corners render square there. Add a VML button in an Outlook conditional comment to keep them rounded.
+          <div class="fix">Quick fix: silence with a reason</div>
+        </div>
+        <div class="problems">
+          <div class="problems-title">Problems · 3</div>
+          <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
+          <div class="problem"><span class="sev-warn">▲</span>@media prefers-color-scheme · Gmail, Outlook Classic<span class="line">30</span></div>
+          <div class="problem"><span class="sev-info">●</span>Token has no local value · system.unsubscribeLink<span class="line">123</span></div>
+        </div>
+      </div>
+      <div class="previews">
+        <div class="preview-toolbar">
+          <strong>Comparing 3 clients</strong>
+          <span class="chip">Light + dark</span>
+          <span class="chip">Viewport · 600 px</span>
+          <span class="chip">Zoom · 50%</span>
+        </div>
+        <div class="preview-cards">
+          {cards.map((card) => (
+            <div class="preview-card">
+              <div class="preview-card-head">
+                <span><strong>{card.name}</strong> <span class="mode">{card.mode}</span></span>
+                <span class="score" style={`background:${card.badge}`}>{card.score}</span>
+              </div>
+              <div class={`mini-email ${card.theme}`}>
+                <div class="mini-email-paper">
+                  <div class="mini-email-brand">FERNWAY</div>
+                  <img src="/generated/sample/hero.webp" alt="" width="640" height="277" loading="lazy" />
+                  <div class="mini-email-body">
+                    <div class="mini-email-title">Autumn field notes</div>
+                    <div class="mini-email-text">Hi there, the light is low, the trails are quiet, and the ranges are turning gold.</div>
+                    <div class="mini-email-pair">
+                      <img src="/generated/sample/route.webp" alt="" width="280" height="175" loading="lazy" />
+                      <img src="/generated/sample/kit.webp" alt="" width="280" height="175" loading="lazy" />
+                    </div>
+                    <span class="mini-email-button" style={`border-radius:${card.radius}`}>Read the field notes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="window shot-compact" aria-hidden="true">
+    <div class="window-bar">
+      <span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span>
+      <span class="window-tab active">fernway-newsletter.html</span>
+    </div>
+    <div class="editor">
+      <div class="code-line"><span class="ln">103</span><span><span class="t-punct">&lt;</span><span class="t-tag">a</span> <span class="t-attr">href</span>=<span class="t-str">"<span class="t-var">{"${buttonLink}"}</span>"</span></span></div>
+      <div class="code-line"><span class="ln">104</span><span>  <span class="t-attr">style</span>=<span class="t-str">"padding:14px 32px;</span></span></div>
+      <div class="code-line flagged"><span class="ln">105</span><span><span class="t-str">  <span class="squiggle">border-radius:24px;</span></span></span></div>
+      <div class="code-line"><span class="ln">106</span><span><span class="t-str">  background:<span class="t-var">{"${accentColor}"}</span>;"</span><span class="t-punct">&gt;</span></span></div>
+      <div class="code-line"><span class="ln">107</span><span>  <span class="t-var">{"${buttonText}"}</span></span></div>
+      <div class="hover-card">
+        <div class="rule">border-radius</div>
+        Not supported in <strong>Outlook Classic</strong>, so the button's corners render square there. Add a VML button in an Outlook conditional comment to keep them rounded.
+        <div class="fix">Quick fix: silence with a reason</div>
+      </div>
+      <div class="problems">
+        <div class="problems-title">Problems</div>
+        <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
+        <div class="problem"><span class="sev-warn">▲</span>@media prefers-color-scheme · Gmail, Outlook Classic<span class="line">30</span></div>
+      </div>
+    </div>
+    <div class="previews">
+      <div class="preview-toolbar"><strong>Leadlens preview</strong><span>Comparing 2 clients</span></div>
+      <div class="preview-cards">
+        {compactCards.map((card) => (
+          <div class="preview-card">
+            <div class="preview-card-head"><span><strong>{card.name}</strong></span></div>
+            <div class={`mini-email ${card.theme}`}>
+              <div class="mini-email-paper">
+                <img src="/generated/sample/hero.webp" alt="" width="640" height="277" loading="lazy" />
+                <div class="mini-email-body">
+                  <div class="mini-email-title">Autumn field notes</div>
+                  <span class="mini-email-button" style={`border-radius:${card.radius}`}>Read the field notes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  figure {
+    margin-left: 0;
+    margin-right: 0;
+  }
+</style>

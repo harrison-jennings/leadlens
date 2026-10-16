@@ -1,0 +1,20 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+---
+
+<Marketing title="Page not found · Leadlens" description="This page doesn't exist." bodyClass="not-found-body">
+  <div class="not-found">
+    <header class="container" style="padding-top: 22px; padding-bottom: 22px">
+      <a class="brand" href="/"><span class="wordmark">lead<span class="dot">.</span>lens</span></a>
+    </header>
+    <main id="main">
+      <p class="code-404" aria-hidden="true">{"{ 4"}<span></span>{"4 }"}</p>
+      <h1>This page didn't render.</h1>
+      <p>The page you're looking for doesn't exist or has moved.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/">Go to the home page</a>
+        <a class="button button-secondary" href="/docs/">Read the docs</a>
+      </div>
+    </main>
+  </div>
+</Marketing>

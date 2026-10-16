@@ -1,0 +1,26 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import { Content } from "../generated/changelog.md";
+import { RELEASES_URL } from "../data/site.mjs";
+---
+
+<Marketing title="Changelog · Leadlens" description="What's new in Leadlens, release by release.">
+  <div class="page">
+    <SiteHeader tone="light" current="changelog" />
+    <main class="page-main" id="main">
+      <div class="container">
+        <div class="page-intro">
+          <h1>Changelog</h1>
+          <p class="lede">What's new in Leadlens. Every change merged to the main branch is published as the latest build, and its compatibility data updates with the Emailens engine.</p>
+          <a class="pill-link" href={RELEASES_URL}>Latest build on GitHub</a>
+        </div>
+        <div class="prose">
+          <Content />
+        </div>
+      </div>
+    </main>
+  </div>
+  <SiteFooter />
+</Marketing>

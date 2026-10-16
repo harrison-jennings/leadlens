@@ -1,0 +1,48 @@
+# Keeps Leadlens on the newest Emailens engine without anyone watching npm.
+#
+# The engine carries the email-client knowledge — what each client supports,
+# how it rewrites an email, which checks apply — and Emailens updates it often.
+# Leadlens pins it exactly and bundles it into the VSIX, so a new release only
+# reaches users through a PR here: CI runs the full suite against it, and a
+# merge to main publishes a new build (see ci.yml).
+#
+# Version updates are limited to the engine. The build tools are not worth a
+# stream of PRs; vulnerable dependencies still get Dependabot security PRs,
+# which are enabled in the repository settings.
+
+version: 2
+updates:
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "Australia/Sydney"
+    allow:
+      - dependency-name: "@emailens/engine"
+    commit-message:
+      prefix: "Engine"
+
+  # The website's packages (Astro, Starlight, fonts): one grouped PR a month.
+  # Vercel builds a preview for it, and the Site workflow checks the build.
+  - package-ecosystem: "bun"
+    directory: "/site"
+    schedule:
+      interval: "monthly"
+    groups:
+      site:
+        patterns: ["*"]
+    commit-message:
+      prefix: "Site"
+
+  # Workflow actions are retired from time to time; this keeps CI running.
+  # One grouped PR a month at most.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "CI"

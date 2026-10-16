@@ -1,0 +1,6 @@
+{
+  "name": "leadlens-integration-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A workspace for the integration suite to open. Its node_modules is written at test time: the point is that the extension loads the compiler the workspace has, not the one we have."
+}

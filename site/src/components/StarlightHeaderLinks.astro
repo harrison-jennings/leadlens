@@ -1,0 +1,12 @@
+---
+// Starlight's header shows social icons in this slot. The docs header also
+// needs the site's own links, so they sit beside the default icons.
+import Default from "@astrojs/starlight/components/SocialIcons.astro";
+import { DOWNLOAD_URL } from "../data/site.mjs";
+---
+
+<div class="ll-header-links">
+  <a class="ll-text-link" href="/changelog/">Changelog</a>
+  <Default />
+  <a class="ll-download" href={DOWNLOAD_URL}>Download</a>
+</div>

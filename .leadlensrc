@@ -1,0 +1,7 @@
+{
+  "include": [
+    "samples/**/*.html",
+    "samples/**/*.mjml",
+    "src/__tests__/fixtures/**/*.html"
+  ]
+}

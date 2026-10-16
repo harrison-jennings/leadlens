@@ -1,0 +1,239 @@
+{
+  "name": "leadlens",
+  "displayName": "Leadlens — Email Preview & Linting for Adobe Marketo Engage",
+  "description": "Build and inspect Adobe Marketo Engage Email Editor 2.0 templates and email HTML with local multi-client previews and source-linked linting.",
+  "version": "1.0.0",
+  "private": true,
+  "publisher": "leadlens",
+  "license": "MIT",
+  "homepage": "https://leadlens.harrisonjennings.au",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harrison-jennings/leadlens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/harrison-jennings/leadlens/issues"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "HTML emails are linted in Restricted Mode. MJML templates are not: compiling one runs the workspace's own mjml package, which is code from the folder you opened."
+    }
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "marketo",
+    "email",
+    "html-email",
+    "outlook",
+    "gmail",
+    "css",
+    "linter"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:mjml",
+    "workspaceContains:**/*.mjml"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "leadlens.preview",
+        "title": "Leadlens: Open Preview to the Side",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "leadlens.lintDocument",
+        "title": "Leadlens: Lint This Email"
+      },
+      {
+        "command": "leadlens.showReport",
+        "title": "Leadlens: Show Full Report"
+      },
+      {
+        "command": "leadlens.marketo.openPreparedHtml",
+        "title": "Leadlens: Open Prepared Marketo HTML"
+      },
+      {
+        "command": "leadlens.marketo.previewComponentInTemplate",
+        "title": "Leadlens: Preview Component in Marketo Template"
+      },
+      {
+        "command": "leadlens.marketo.clearComponentTemplate",
+        "title": "Leadlens: Clear Component Template Preview"
+      },
+      {
+        "command": "leadlens.fixAll",
+        "title": "Leadlens: Fix All Problems"
+      },
+      {
+        "command": "leadlens.copySnippet",
+        "title": "Leadlens: Copy Fix Snippet",
+        "enablement": "false"
+      }
+    ],
+    "configuration": {
+      "title": "Leadlens",
+      "properties": {
+        "leadlens.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Lint HTML and MJML emails."
+        },
+        "leadlens.include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/*.html",
+            "**/*.htm",
+            "**/*.mjml"
+          ],
+          "markdownDescription": "Glob patterns to lint. Keeps the linter out of HTML that isn't email — set this to e.g. `emails/**/*.html` for a mixed repo."
+        },
+        "leadlens.run": {
+          "type": "string",
+          "enum": [
+            "onType",
+            "onSave"
+          ],
+          "default": "onType",
+          "description": "When to re-lint."
+        },
+        "leadlens.clients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Client IDs to report on. Empty means all 21. Run `Leadlens: Show Full Report` to see the list."
+        },
+        "leadlens.skip": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "spam",
+              "links",
+              "accessibility",
+              "images",
+              "compatibility",
+              "inboxPreview",
+              "size",
+              "templateVariables",
+              "overflow",
+              "visual",
+              "vml",
+              "styleSurvival",
+              "darkContrast",
+              "mobileContrast",
+              "targeting"
+            ]
+          },
+          "default": [],
+          "description": "Checks to skip. Skipping accessibility also skips dark and mobile contrast. Contrast and targeting checks are general checks, not filtered by selected clients."
+        },
+        "leadlens.rules": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning",
+              "info",
+              "off"
+            ]
+          },
+          "markdownDescription": "Severity per rule, keyed by the code shown in the Problems panel — a CSS property (`border-radius`) or a rule id (`img-missing-alt`). `off` hides it entirely. Set it in `.leadlensrc` to make it the team's.\n\n```json\n{ \"border-radius\": \"error\", \"font-size\": \"off\" }\n```"
+        },
+        "leadlens.maxOccurrencesPerRule": {
+          "type": "number",
+          "default": 20,
+          "markdownDescription": "A single broken rule can occur in dozens of elements. Underline at most this many of them per rule, so one mistake doesn't fill the Problems panel."
+        },
+        "leadlens.marketo.context": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "template",
+            "email",
+            "fragment",
+            "generic"
+          ],
+          "enumDescriptions": [
+            "Detect Marketo syntax conservatively from the source.",
+            "Treat the file as an Email Editor 2.0 template and validate module/container structure.",
+            "Treat the file as a complete Marketo email without requiring template structure.",
+            "Treat the file as standalone Marketo content and skip whole-email checks.",
+            "Treat the file as ordinary HTML and do not resolve Marketo syntax."
+          ],
+          "default": "auto",
+          "scope": "resource",
+          "markdownDescription": "How to interpret HTML in this folder. Auto-detection leaves ordinary HTML and other template languages alone; an explicit choice wins when inherited or assembled Marketo HTML is ambiguous."
+        },
+        "leadlens.preview.defaultClient": {
+          "type": "string",
+          "default": "gmail-web",
+          "markdownDescription": "Client the preview opens on. Run `Leadlens: Show Full Report` to see the IDs."
+        },
+        "leadlens.preview.loadRemoteImages": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Load images hosted elsewhere in the preview. **Off by default**: an email's images include its tracking pixels, so previewing one would tell the sender you opened it."
+        },
+        "leadlens.resolveStylesheetLinks": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Read local `<link rel=\"stylesheet\">` files and analyse the email with that CSS folded in, reporting findings in the stylesheet itself. The link is still reported separately — email clients drop external stylesheets, so a build step has to inline it before sending."
+        }
+      }
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "leadlens.preview",
+          "when": "editorLangId == html || resourceExtname == .mjml",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "vscode:prepublish": "node build.mjs --minify",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test src/__tests__",
+    "test:integration": "node clean-integration-output.mjs && node build.mjs && tsc -p tsconfig.test.json && vscode-test",
+    "package": "bunx @vscode/vsce@4.0.0 package --no-dependencies"
+  },
+  "dependencies": {
+    "@emailens/engine": "0.14.10"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.3.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "esbuild": "^0.24.0",
+    "mjml": "^5.4.0",
+    "mocha": "^11.8.0",
+    "typescript": "^5.9.3"
+  },
+  "icon": "docs/icon.png",
+  "galleryBanner": {
+    "color": "#121A2B",
+    "theme": "dark"
+  }
+}

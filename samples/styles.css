@@ -1,0 +1,13 @@
+/* Findings here are reported in this file, on their own lines — not against
+   the <link> tag in the email that pulled it in. Each one says which email
+   that was. */
+.hero {
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}

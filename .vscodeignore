@@ -1,0 +1,33 @@
+# What ships is out/extension.js, the Leadlens icon and preview tab icons, the
+# README, changelog, licence and generated third-party notices. Everything else
+# is source, tooling, documentation for the repository, or internal material.
+#
+# The bundle inlines every dependency, so node_modules is excluded rather than
+# pruned — and .vscode-test is 1.4 GB of downloaded VS Code, which is the one
+# entry here that turns a 3 MB package into an unpublishable one.
+
+.vscode/**
+.vscode-test/**
+samples/**
+.vscode-test.mjs
+.github/**
+src/**
+out/**/*.map
+out-test/**
+node_modules/**
+build.mjs
+clean-integration-output.mjs
+tsconfig.json
+tsconfig.test.json
+bun.lock
+.gitignore
+docs/*.md
+docs/*.svg
+docs/brand/**
+CONTRIBUTING.md
+RELEASING.md
+SECURITY.md
+AGENTS.md
+internal/**
+site/**
+.leadlensrc

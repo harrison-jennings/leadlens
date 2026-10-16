@@ -1,0 +1,83 @@
+/* Starlight's theme in the Leadlens palette (docs/brand/README.md). */
+
+:root {
+  --sl-font: "IBM Plex Sans", system-ui, sans-serif;
+  --sl-font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --sl-color-accent-low: #0f3b37;
+  --sl-color-accent: #3fd6c1;
+  --sl-color-accent-high: #b9f2e9;
+  --sl-color-white: #f4f7fb;
+  --sl-color-gray-1: #e1e7ef;
+  --sl-color-gray-2: #c9d2de;
+  --sl-color-gray-3: #a8b4c6;
+  --sl-color-gray-4: #6b7a92;
+  --sl-color-gray-5: #2a3550;
+  --sl-color-gray-6: #1b2640;
+  --sl-color-black: #121a2b;
+}
+
+:root[data-theme="light"] {
+  --sl-color-accent-low: #e8f7f4;
+  --sl-color-accent: #0b6f64;
+  --sl-color-accent-high: #0a4a43;
+  --sl-color-white: #121a2b;
+  --sl-color-gray-1: #1b2640;
+  --sl-color-gray-2: #2b3548;
+  --sl-color-gray-3: #4a586e;
+  --sl-color-gray-4: #5b6b82;
+  --sl-color-gray-5: #c9d2de;
+  --sl-color-gray-6: #e9eef5;
+  --sl-color-gray-7: #f4f7fb;
+  --sl-color-black: #ffffff;
+}
+
+/* Bold at 600: the site loads no 700 weight. */
+strong,
+b {
+  font-weight: 600;
+}
+
+.sl-markdown-content h2,
+.sl-markdown-content h3 {
+  letter-spacing: -0.015em;
+}
+
+/* Header links added beside Starlight's social icons. */
+.ll-header-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: var(--sl-text-sm);
+}
+
+.ll-header-links a {
+  color: var(--sl-color-gray-2);
+  text-decoration: none;
+}
+
+.ll-header-links a:hover {
+  color: var(--sl-color-white);
+}
+
+.ll-header-links .ll-download {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--sl-color-accent);
+  color: var(--sl-color-black);
+  font-weight: 600;
+}
+
+.ll-header-links .ll-download:hover {
+  background: var(--sl-color-accent-high);
+  color: var(--sl-color-black);
+}
+
+@media (max-width: 50rem) {
+  .ll-header-links .ll-text-link {
+    display: none;
+  }
+}

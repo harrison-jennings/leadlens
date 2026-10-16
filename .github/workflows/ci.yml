@@ -1,0 +1,165 @@
+name: CI
+
+# Every pull request runs the checks, because main requires them to pass. A
+# merge that only changes the website doesn't publish a new extension build.
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["site/**", ".github/workflows/site.yml"]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: typecheck, test, package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Pinned, so a new Bun release cannot break a build whose lockfile has
+      # not changed. Move it deliberately, together with the local toolchain.
+      # Third-party, so pinned to a reviewed commit; Dependabot moves the pin.
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.2"
+
+      # --frozen-lockfile so CI installs what a contributor's checkout does.
+      # A newer engine arrives as a Dependabot PR that changes the lockfile,
+      # and this same suite decides whether it is safe to merge.
+      - run: bun install --frozen-lockfile
+
+      - run: bun run typecheck
+
+      - name: Unit tests (no editor)
+        run: bun test src/__tests__
+
+      # The downloaded VS Code is ~350MB and does not change between runs.
+      - name: Cache the VS Code the integration suite downloads
+        uses: actions/cache@v6
+        with:
+          path: .vscode-test
+          key: vscode-test-${{ runner.os }}-${{ hashFiles('.vscode-test.mjs') }}
+
+      - run: bun run build
+
+      # Not optional. The unit tests import the sources directly and never see
+      # the bundle; the first time this ran it failed everything because the
+      # bundle threw on load, and nothing else in the project could have caught
+      # it. `xvfb-run` because a real VS Code needs a display.
+      #
+      # It has to come after the build: VS Code loads `out/extension.js`, and
+      # on a clean checkout that file does not exist yet. The first run of this
+      # workflow failed all 26 tests for exactly that reason, every one of them
+      # timing out waiting for an extension that had never activated. The
+      # script now builds first as well, so the order here is belt and braces.
+      - name: Integration tests (a real VS Code)
+        run: xvfb-run -a bun run test:integration
+
+      # package.json holds major.minor; the patch is this workflow's run
+      # number. Every build therefore has a higher version than the last, so
+      # VS Code installs a newer download as an update instead of declining
+      # it as already installed. Only the packaged copy changes.
+      - name: Stamp the build number into the version
+        run: |
+          node -e '
+            const fs = require("fs");
+            const manifest = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            const [major, minor] = manifest.version.split(".");
+            manifest.version = `${major}.${minor}.${process.env.GITHUB_RUN_NUMBER}`;
+            fs.writeFileSync("package.json", JSON.stringify(manifest, null, 2) + "\n");
+            console.log(`version: ${manifest.version}`);
+          '
+
+      # `vsce package` is the only thing that enforces the Marketplace's rules
+      # — no SVGs in the README, everything unshipped excluded — and it is
+      # cheaper to fail here than at publish time.
+      - name: Package the extension
+        run: bun run package
+
+      - name: Check the VSIX did not balloon
+        run: |
+          size=$(stat -c%s leadlens-*.vsix)
+          echo "VSIX: $((size / 1024)) KB"
+          unzip -l leadlens-*.vsix
+          # ~700KB today. `.vscode-test/` alone is 1.4GB, so a .vscodeignore
+          # entry that stops matching turns a publishable package into an
+          # impossible one, and it does so silently.
+          test "$size" -lt 3000000
+          # Licence notices and the preview tab icons must ship with it.
+          for file in THIRD_PARTY_NOTICES.md media/preview-light.svg media/preview-dark.svg; do
+            unzip -l leadlens-*.vsix | grep -q "extension/$file" || { echo "missing $file"; exit 1; }
+          done
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vsix
+          path: "*.vsix"
+          if-no-files-found: error
+
+  # Every merge to main replaces one "Latest build" release, so the newest
+  # tested VSIX is always at the same address:
+  # releases/latest/download/leadlens.vsix
+  release:
+    name: publish latest build
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Signing the build's provenance (below).
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: vsix
+          path: dist
+
+      # A signed record that this VSIX was built here, from this commit, by
+      # this workflow. Anyone can check a download against it with
+      # `gh attestation verify`. GitHub only offers attestations to private
+      # repositories on Enterprise plans, so they are made once public.
+      - name: Attest the build's provenance
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest@v4
+        with:
+          subject-path: dist/leadlens-*.vsix
+
+      - name: Replace the latest-build release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          built=$(ls dist/leadlens-*.vsix)
+          cp "$built" dist/leadlens.vsix
+          version=$(basename "$built" .vsix | sed 's/^leadlens-//')
+          engine=$(node -p 'require("./package.json").dependencies["@emailens/engine"]')
+          cat > notes.md <<EOF
+          Built automatically from \`${GITHUB_SHA::7}\` after it passed CI on main.
+
+          - Leadlens ${version}
+          - @emailens/engine ${engine}
+
+          Install or update: download \`leadlens.vsix\`, then in VS Code open the Extensions view, choose **⋯ → Install from VSIX…**, and reload the window. Or run:
+
+          \`\`\`sh
+          code --install-extension leadlens.vsix
+          \`\`\`
+
+          Verify the download was built here: \`gh attestation verify leadlens.vsix --repo ${GITHUB_REPOSITORY}\`
+          EOF
+          gh release delete latest-build --cleanup-tag --yes || true
+          # The title is the bare version: the README's version badge shows it.
+          gh release create latest-build dist/leadlens.vsix "$built" \
+            --target "$GITHUB_SHA" \
+            --title "${version}" \
+            --notes-file notes.md \
+            --latest

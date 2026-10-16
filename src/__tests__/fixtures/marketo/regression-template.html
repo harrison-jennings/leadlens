@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<!--
+  Synthetic Email Editor 2.0 regression template for a fictional brand.
+  It mirrors the structures inherited production templates use: module-scoped
+  typed variables, ten modules in one container, image and text regions, an
+  Outlook VML button, my./lead./system. tokens with and without fallbacks, and
+  a standalone editable footer outside the container.
+-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <meta class="mktoString" id="email-title" mktoName="Tab Title" default="Fernway" allowHTML="false">
+  <meta class="mktoColor" id="link-color" mktoName="Link Color" default="#2F6B4F">
+
+  <meta class="mktoColor" id="background-color" mktoName="Background Color" default="#FFFFFF" mktoModuleScope="true">
+  <meta class="mktoColor" id="background-color-alt" mktoName="Background Color (Alt)" default="#F3F1EC" mktoModuleScope="true">
+  <meta class="mktoColor" id="divider-color" mktoName="Divider Color" default="#E6E2D8" mktoModuleScope="true">
+
+  <meta class="mktoBoolean" id="button-alignment" mktoName="Button Alignment" default="false" false_value="left" true_value="center" false_value_name="Left" true_value_name="Center" mktoModuleScope="true">
+  <meta class="mktoBoolean" id="image-alignment" mktoName="Align Image" default="false" false_value="center" true_value="left" false_value_name="Center" true_value_name="Left" mktoModuleScope="true">
+
+  <meta class="mktoImg" id="hero-background-image" mktoName="Background Image" default="https://example.com/images/hero-background.jpg" mktoModuleScope="true">
+  <meta class="mktoColor" id="hero-background-color" mktoName="Hero Background Color" default="#2F6B4F" mktoModuleScope="true">
+
+  <meta class="mktoColor" id="button-background-color" mktoName="Button Background (Filled)" default="#2F6B4F" mktoModuleScope="true">
+  <meta class="mktoColor" id="button-background-outline" mktoName="Button Background (Outline)" default="#FFFFFF" mktoModuleScope="true">
+
+  <meta class="mktoNumber" id="spacer-height" mktoName="Spacer Height" default="32" min="8" max="64" step="1" mktoModuleScope="true">
+  <meta class="mktoNumber" id="image-width" mktoName="Image Width" default="260" min="8" max="260" step="1" mktoModuleScope="true">
+  <meta class="mktoNumber" id="image-width-small" mktoName="Image Width (Small)" default="168" min="8" max="168" step="1" mktoModuleScope="true">
+  <meta class="mktoList" id="heading-font" mktoName="Heading Font" values="Georgia,Arial" default="Georgia" mktoModuleScope="true">
+
+  <title>${email-title}</title>
+  <!--[if mso]>
+  <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+  <style>td, th, a, p { font-family: Arial, sans-serif !important; }</style>
+  <![endif]-->
+  <style>
+    body { margin: 0; padding: 0; background-color: #F3F1EC; }
+    a { color: ${link-color}; }
+    @media only screen and (max-width: 620px) {
+      .wrapper { width: 100% !important; }
+      .stack { display: block !important; width: 100% !important; }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; background-color:#F3F1EC;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F3F1EC;">
+    <tr>
+      <td align="center" style="padding:16px 8px;">
+        <table role="presentation" class="wrapper" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;">
+          <tr>
+            <td class="mktoContainer" id="mktoModuleWrapper">
+
+              <table class="mktoModule" mktoName="Header" id="header" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding:24px;">
+                    <div class="mktoImg" id="header-logo" mktoName="Header Logo" mktoLockImgSize="false">
+                      <a href="https://example.com/"><img src="https://example.com/images/logo.png" width="140" alt="Fernway" style="display:block; border:0;"></a>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Hero" id="hero" bgcolor="${hero-background-color}" style="background-color:${hero-background-color}; background-image:url('${hero-background-image}'); background-size:cover;" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:48px 32px;">
+                    <div class="mktoText" id="hero-text" mktoName="Hero Text">
+                      <h1 style="margin:0; font-family:${heading-font}, serif; font-size:32px; color:#FFFFFF;">Autumn field notes</h1>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Body" id="body" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:32px;">
+                    <div class="mktoText" id="body-text" mktoName="Text" style="padding: 0 8px;">
+                      <p style="margin:0 0 16px; font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#1E2A24;">Hi {{lead.First Name:default=there}},</p>
+                      <p style="margin:0; font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#1E2A24;">The ranges are turning gold and the trails are quiet. Here is where we have been walking this month.</p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Button" id="button" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="${button-alignment}" style="padding:8px 32px 32px;">
+                    <!--[if mso]>
+                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="https://example.com/field-notes" style="height:44px; v-text-anchor:middle; width:220px;" arcsize="50%" stroke="f" fillcolor="${button-background-color}">
+                      <v:textbox inset="0,0,0,0"><center style="color:#FFFFFF; font-family:Arial, sans-serif; font-size:16px;">Read the notes</center></v:textbox>
+                    </v:roundrect>
+                    <![endif]-->
+                    <!--[if !mso]><!-->
+                    <div class="mktoText" mktoName="Button" id="button-1">
+                      <a href="https://example.com/field-notes" style="display:inline-block; padding:12px 28px; border-radius:22px; background-color:${button-background-color}; color:#FFFFFF; font-family:Arial, sans-serif; font-size:16px; text-decoration:none;">Read the notes</a>
+                    </div>
+                    <!--<![endif]-->
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Button Outline" id="button-outline" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="${button-alignment}" style="padding:8px 32px 32px;">
+                    <div class="mktoText" mktoName="Button" id="button-outline-text">
+                      <a href="https://example.com/routes" style="display:inline-block; padding:10px 26px; border:2px solid ${button-background-color}; background-color:${button-background-outline}; color:#1E2A24; font-family:Arial, sans-serif; font-size:16px; text-decoration:none;">See all routes</a>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Image Left – Feature" id="image-left" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td class="stack" width="50%" align="${image-alignment}" valign="top" style="padding:16px 32px;">
+                    <div class="mktoImg" id="image-left-img" mktoName="Image" mktoLockImgSize="true">
+                      <img src="https://example.com/images/route.png" width="${image-width}" alt="A trail winding through red heath" style="display:block; border:0;">
+                    </div>
+                  </td>
+                  <td class="stack" width="50%" valign="top" style="padding:16px 32px;">
+                    <div class="mktoText" id="image-left-text" mktoName="Text">
+                      <h2 style="margin:0 0 8px; font-family:${heading-font}, serif; font-size:20px; color:#1E2A24;">The Ridgeline Loop</h2>
+                      <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#1E2A24;">Fourteen kilometres and the best sunrise in the range.</p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Image Right – Feature" id="image-right" bgcolor="${background-color-alt}" style="background-color:${background-color-alt};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td class="stack" width="50%" valign="top" style="padding:16px 32px;">
+                    <div class="mktoText" id="image-right-text" mktoName="Text">
+                      <h2 style="margin:0 0 8px; font-family:${heading-font}, serif; font-size:20px; color:#1E2A24;">What we packed</h2>
+                      <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#1E2A24;">A light shell, a warm layer and a flask.</p>
+                    </div>
+                  </td>
+                  <td class="stack" width="50%" align="${image-alignment}" valign="top" style="padding:16px 32px;">
+                    <div class="mktoImg" id="image-right-img" mktoName="Image" mktoLockImgSize="true">
+                      <img src="https://example.com/images/kit.png" width="${image-width-small}" alt="A green day pack beside a flask" style="display:block; border:0;">
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Spacer" id="spacer" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td height="${spacer-height}" style="height:${spacer-height}px; font-size:0; line-height:0; border-bottom:1px solid ${divider-color};">&nbsp;</td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Testimonial" id="testimonial" bgcolor="${background-color-alt}" style="background-color:${background-color-alt};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:32px;">
+                    <div class="mktoText" id="testimonial-text" mktoName="Text" style="text-align:center;">
+                      <p style="margin:0; font-family:${heading-font}, serif; font-size:18px; line-height:1.5; color:#1E2A24;">"Every route we tried was better than the guidebook promised."</p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <table class="mktoModule" mktoName="Closing" id="closing" bgcolor="${background-color}" style="background-color:${background-color};" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:32px;">
+                    <div class="mktoText" id="closing-text" mktoName="Text">
+                      <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; color:#1E2A24;">See you on the trail. <a href="{{system.viewAsWebpageLink}}">View this email in your browser</a>.</p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 32px; font-family:Arial, sans-serif; font-size:12px; line-height:1.6; color:#333D38;">
+              <div class="mktoText" id="footer" mktoName="Footer - Edit with Caution">
+                <p style="margin:0 0 8px;">{{my.footer_address:default=Fernway Outdoor Co., 1 Example Lane, Sampletown VIC 3000, Australia}} · {{my.footer_phone:default=+61 3 5550 0100}}</p>
+                <p style="margin:0 0 8px;">© {{my.current_year:default=2026}} Fernway Outdoor Co. <a href="{{system.unsubscribeLink}}">Unsubscribe</a></p>
+                <p style="margin:0;">Prefer fewer emails? <a href="{{system.unsubscribeLink}}">Manage preferences</a>.</p>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

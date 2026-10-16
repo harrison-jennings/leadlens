@@ -1,0 +1,12 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <!-- MJML wants px and says so, then compiles this anyway. The
+             complaint lands in the Problems panel on this line. -->
+        <mj-text font-size="1rem">Welcome aboard.</mj-text>
+        <mj-button href="http://example.com/start" border-radius="6px">Get started</mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

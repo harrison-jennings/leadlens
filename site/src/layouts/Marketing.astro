@@ -1,0 +1,43 @@
+---
+import "../styles/fonts.css";
+import "../styles/site.css";
+import Analytics from "@vercel/analytics/astro";
+import { SITE_URL, TAGLINE } from "../data/site.mjs";
+
+interface Props {
+  title: string;
+  description?: string;
+  bodyClass?: string;
+}
+const { title, description = TAGLINE, bodyClass } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITE_URL).href;
+const image = `${SITE_URL}/generated/og.png`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#121A2B" />
+    <link rel="icon" href="/generated/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/generated/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/generated/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Leadlens" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <slot name="head" />
+  </head>
+  <body class={bodyClass}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+    <Analytics />
+  </body>
+</html>

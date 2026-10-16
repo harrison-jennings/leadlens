@@ -1,0 +1,306 @@
+---
+import Marketing from "../layouts/Marketing.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import ProductShot from "../components/ProductShot.astro";
+import extension from "../generated/extension.json";
+import { CLIENTS, DOWNLOAD_URL, PORTFOLIO_URL, SITE_URL, TAGLINE } from "../data/site.mjs";
+
+// Two rows that scroll in opposite directions by half their length. Each half
+// holds the row four times, so it is wider than any screen (5,000 px or more)
+// and neither end ever shows a gap. Screen readers get the plain list instead.
+const half = Math.ceil(CLIENTS.length / 2);
+const rows = [CLIENTS.slice(0, half), CLIENTS.slice(half)];
+const COPIES = 8;
+
+const marketoPoints = [
+  "Every variable type, with module-scoped preview values",
+  "Token fallbacks applied; runtime-only tokens clearly marked",
+  "Preview a custom component inside a real template region",
+  "Outline, hovers, Go to Definition and completions",
+  "A read-only view of the prepared HTML. Your source never changes",
+];
+
+const values = [
+  { label: "Accent colour", id: "${accentColor}", value: "#2F6B4F", origin: "Default", tone: "" },
+  { label: "Heading size", id: "${headingSize}", value: "30 px", origin: "Default", tone: "" },
+  { label: "Hero alignment", id: "Hero · ${heroAlign}", value: "left", origin: "Module override", tone: "accent" },
+  { label: "First name", id: "lead.First Name", value: "there", origin: "Token fallback", tone: "accent" },
+  { label: "Unsubscribe link", id: "system.unsubscribeLink", value: "unknown", origin: "Marketo only", tone: "warn" },
+];
+
+const problems = [
+  { level: "error", text: "Hero image has no alt text", code: "img-missing-alt" },
+  { level: "warn", text: "Not supported in Outlook Classic", code: "border-radius" },
+  { level: "warn", text: "Link uses http://", code: "insecure-link" },
+  { level: "info", text: "Token has no local preview value", code: "marketo-token" },
+];
+
+// Questions people ask before installing. The answers are also published as
+// structured data, so they must stay plain text.
+const faqs = [
+  {
+    question: "Is Leadlens free?",
+    answer: "Yes. Leadlens is free and open source, under the MIT licence. There's no account, trial or paid tier.",
+  },
+  {
+    question: "Does it connect to my Marketo instance?",
+    answer: "No. Leadlens works on HTML files in your editor and never connects to Marketo or any other platform. Open a template or email you've saved locally, and it recognises the Email Editor 2.0 syntax.",
+  },
+  {
+    question: "How accurate are the previews?",
+    answer: "They simulate each client from its documented behaviour: which HTML and CSS it supports, how Outlook handles conditional comments and VML, and how dark mode recolours the email. They aren't screenshots from the real apps, so for important sends a final check in the inboxes that matter most is still worthwhile.",
+  },
+  {
+    question: "Does my email content leave my computer?",
+    answer: "No. Leadlens has no telemetry and makes no network requests of its own. Remote images in the preview stay blocked until you allow them; once allowed, they load from wherever the email hosts them.",
+  },
+  {
+    question: "What do I need to run it?",
+    answer: `Visual Studio Code ${extension.vscode} or later. MJML files also need the mjml package installed in your project.`,
+  },
+  {
+    question: "Does it only work with Marketo emails?",
+    answer: "No. Any HTML email gets previews and linting, and MJML is supported too. The Marketo features switch on when Leadlens detects Email Editor 2.0 syntax.",
+  },
+  {
+    question: "How do I update?",
+    answer: "Download the latest build and install it over the top; it replaces the installed version. Each build includes the newest compatibility data from the Emailens engine.",
+  },
+];
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Leadlens",
+    description: TAGLINE,
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Windows, macOS, Linux",
+    softwareRequirements: `Visual Studio Code ${extension.vscode} or later`,
+    softwareVersion: extension.version,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    license: "https://opensource.org/licenses/MIT",
+    downloadUrl: DOWNLOAD_URL,
+    url: SITE_URL,
+    image: `${SITE_URL}/generated/og.png`,
+    author: { "@type": "Person", name: "Harrison Jennings", url: PORTFOLIO_URL },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  },
+];
+
+const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B6F64" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>`;
+---
+
+<Marketing title="Leadlens: email preview and linting for Adobe Marketo Engage">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <SiteHeader tone="dark" />
+  <main id="main">
+  <section class="hero" aria-label="Introduction">
+    <div class="container">
+      <div class="hero-copy">
+        <span class="hero-chip">VS Code extension for Adobe Marketo Engage</span>
+        <h1>Preview every inbox before you&nbsp;send.</h1>
+        <p class="hero-lede">Leadlens shows your email in 21 email clients as you type, flags what will break, and understands Marketo Email Editor 2.0 variables, modules and tokens.</p>
+        <div class="hero-actions">
+          <a class="button button-primary button-download" href={DOWNLOAD_URL}>
+            <span class="button-label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
+              Download for VS Code
+            </span>
+            <span class="button-sub">Version {extension.version} · VS Code {extension.vscode} or later</span>
+          </a>
+          <a class="button button-secondary" href="/docs/">Read the docs</a>
+        </div>
+        <p class="hero-note">Free · Runs locally · No account</p>
+      </div>
+      <ProductShot />
+    </div>
+  </section>
+
+    <section class="clients" aria-labelledby="clients-title">
+      <h2 class="label" id="clients-title">21 client simulations, light and dark</h2>
+      <ul class="sr-only">
+        {CLIENTS.map((client) => <li>{client}</li>)}
+      </ul>
+      {rows.map((row, index) => (
+        <div class="marquee" aria-hidden="true">
+          <ul class={`marquee-track${index === 1 ? " reverse" : ""}`}>
+            {Array.from({ length: COPIES }, (_, copy) =>
+              row.map((client) => <li aria-hidden={copy > 0 ? "true" : undefined}>{client}</li>),
+            )}
+          </ul>
+        </div>
+      ))}
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Everything you check before a send, inside your editor.</h2>
+          <p class="lede">No uploading, no switching tabs and no waiting for a render farm. Edit the HTML and see the result.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature">
+            <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3FD6C1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5"></rect><rect x="14" y="4" width="7" height="16" rx="1.5"></rect></svg></span>
+            <h3>Live, side-by-side previews</h3>
+            <p>Compare up to four clients, or one client in light and dark. Set the viewport anywhere from 240 to 1,600 px and watch your breakpoints respond.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3FD6C1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4c-2 0-3 1-3 3v3c0 1-1 2-2 2 1 0 2 1 2 2v3c0 2 1 3 3 3"></path><path d="M16 4c2 0 3 1 3 3v3c0 1 1 2 2 2-1 0-2 1-2 2v3c0 2-1 3-3 3"></path><circle cx="12" cy="12" r="1.6" fill="#3FD6C1"></circle></svg></span>
+            <h3>Built for Email Editor 2.0</h3>
+            <p>Templates, complete emails and components. Variables, module values and token fallbacks resolve locally, and runtime-only tokens stay clearly marked.</p>
+          </article>
+          <article class="feature">
+            <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3FD6C1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h10"></path><path d="M4 17h7"></path><path d="m15 17 2 2 4-4"></path></svg></span>
+            <h3>Linting where you write</h3>
+            <p>Compatibility, accessibility, links, images, size and dark-mode contrast, underlined at the exact line, with explanations on hover and one-click fixes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section white">
+      <div class="container split">
+        <div class="split-copy">
+          <span class="eyebrow">Marketo Email Editor 2.0</span>
+          <h2 class="section-title">Made for Marketo templates, not generic HTML.</h2>
+          <p class="lede">Leadlens reads your template the way Marketo does, so you see real content instead of <code>{"${variable}"}</code> placeholders, and no false alarms about valid tokens.</p>
+          <ul class="checklist">
+            {marketoPoints.map((point) => <li><Fragment set:html={check} /><span>{point}</span></li>)}
+          </ul>
+        </div>
+        <div class="values-panel" role="img" aria-label="The Preview values panel: each template variable and token with its local value and where that value came from.">
+          <div class="values-head" aria-hidden="true"><strong>Preview values</strong><span>template · 2 unknown</span></div>
+          <ul class="values-list" aria-hidden="true">
+            {values.map((row) => (
+              <li class="value-row">
+                <span class="value-name"><strong>{row.label}</strong><code>{row.id}</code></span>
+                <span class="value-current">{row.value}</span>
+                <span class={`value-origin ${row.tone}`}>{row.origin}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split reverse">
+        <div>
+          <div class="problems-panel" role="img" aria-label="The Problems panel listing findings with their severity and rule code.">
+            <div class="problems-panel-head" aria-hidden="true">Problems<span>4 findings</span></div>
+            <ul aria-hidden="true">
+              {problems.map((problem) => (
+                <li><span class={`level ${problem.level}`}>{problem.level}</span><span class="text">{problem.text}</span><span class="code">{problem.code}</span></li>
+              ))}
+            </ul>
+          </div>
+          <p class="code-snippet" tabindex="0" aria-label="Example suppression comment">&lt;!-- leadlens-disable-next-line border-radius -- VML covers Outlook --&gt;</p>
+        </div>
+        <div class="split-copy">
+          <span class="eyebrow">Linting</span>
+          <h2 class="section-title">Know what breaks, where, and for whom.</h2>
+          <p class="lede">Every finding points at the exact characters responsible, even through Marketo substitutions and linked stylesheets, and names the clients it affects.</p>
+          <p class="lede">Fix the mechanical ones in one click, tune severities for your team, and silence deliberate choices with a comment that records why.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Private by default.</h2>
+        </div>
+        <div class="privacy-grid">
+          <div class="privacy-item">
+            <h3>Runs on your machine</h3>
+            <p>No telemetry, no account, and no network requests of its own. Leadlens never connects to Marketo.</p>
+          </div>
+          <div class="privacy-item">
+            <h3>Tracking pixels stay quiet</h3>
+            <p>Remote images are blocked until you allow them, so previewing never tells a sender their email was opened.</p>
+          </div>
+          <div class="privacy-item">
+            <h3>Sandboxed previews</h3>
+            <p>Code in an email can't run, and only images inside your workspace can load. Your source is never changed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section white">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Install in three steps.</h2>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <span class="number">01</span>
+            <strong>Download</strong>
+            <span>Get <code>leadlens.vsix</code> from the <a href={DOWNLOAD_URL}>latest release</a>.</span>
+          </li>
+          <li class="step">
+            <span class="number">02</span>
+            <strong>Install</strong>
+            <span>In VS Code: Extensions → ⋯ → Install from VSIX. Or run <code>code --install-extension leadlens.vsix</code>.</span>
+          </li>
+          <li class="step">
+            <span class="number">03</span>
+            <strong>Preview</strong>
+            <span>Open an email and run <strong>Leadlens: Open Preview to the Side</strong>.</span>
+          </li>
+        </ol>
+        <p class="note">Requires VS Code {extension.vscode} or later. Compatibility data comes from the open-source Emailens engine and updates with each new build. To update, install the newest download over the top.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="faq-title">
+      <div class="container faq-layout">
+        <div class="section-head">
+          <h2 class="section-title" id="faq-title">Questions</h2>
+          <p class="lede">Anything else is probably in the <a href="/docs/">documentation</a>.</p>
+        </div>
+        <div class="faq-list">
+          {faqs.map(({ question, answer }) => (
+            <details class="faq">
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0">
+      <div class="container">
+        <div class="cta-band">
+          <div>
+            <h2>See your next send in every inbox.</h2>
+            <p>Free, local and ready in a minute.</p>
+          </div>
+          <div class="cta-actions">
+  <a class="button button-primary button-download" href={DOWNLOAD_URL}>
+              <span class="button-label">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
+                Download for VS Code
+              </span>
+              <span class="button-sub">Version {extension.version} · VS Code {extension.vscode} or later</span>
+            </a>
+            <a class="button button-secondary" href="/docs/">Read the docs</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</Marketing>

@@ -1,0 +1,47 @@
+name: Bug report
+description: Something in Leadlens isn't working as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem. Please remove anything confidential from the HTML you share, and never include real customer data.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did Leadlens do, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: html
+    attributes:
+      label: Smallest HTML that shows the problem
+      description: Cut the email down to the part that matters.
+      render: html
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Preview
+        - Linting or diagnostics
+        - Marketo templates, variables or tokens
+        - Quick fixes
+        - Configuration
+        - MJML
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: Email client and view
+      description: For preview or compatibility problems, for example "Outlook Classic, dark mode, 375 px".
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Leadlens version (Extensions view) and VS Code version (Help → About).
+    validations:
+      required: true

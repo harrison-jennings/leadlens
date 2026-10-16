@@ -1,0 +1,6 @@
+{
+  "rules": {
+    "insecure-link": "error",
+    "letter-spacing": "off"
+  }
+}
