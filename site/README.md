@@ -40,4 +40,4 @@ Every page loads Vercel Web Analytics, which counts page views without cookies: 
 
 ## Deployment
 
-Vercel builds the `site` folder: the root directory is `site`, and Vercel detects Astro and Bun automatically. `vercel.json` skips a build when nothing the site uses has changed: the site itself, `docs/`, `CHANGELOG.md`, the sample images and the extension's `package.json` (which supplies the version and VS Code requirement shown on the download buttons). The Site workflow in `.github/workflows/site.yml` also builds the site on every pull request that touches it.
+Vercel builds the `site` folder: the root directory is `site`, and Vercel detects Astro and Bun automatically. `vercel.json` skips a build when nothing the site uses has changed: the site itself, `docs/`, `CHANGELOG.md`, the sample images and the extension's `package.json` (which supplies the version and VS Code requirement shown on the download buttons). A commit with no parent, such as a repository's first, always builds. The Site workflow in `.github/workflows/site.yml` also builds the site on every pull request that touches it.
