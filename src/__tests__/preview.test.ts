@@ -105,10 +105,10 @@ describe("remote images are a decision, not a default", () => {
     }
   });
 
-  test("workspace image access does not turn remote images on", () => {
-    const csp = contentSecurityPolicy(NONCE, false, "https://file+.vscode-resource.vscode-cdn.net");
-    expect(csp).toContain("img-src data: https://file+.vscode-resource.vscode-cdn.net");
-    expect(csp).not.toContain("img-src https: http:");
+  test("local images need no source of their own", () => {
+    // They are embedded as data URLs, so the policy grants no file access.
+    expect(contentSecurityPolicy(NONCE, false)).toContain("img-src data:;");
+    expect(contentSecurityPolicy(NONCE, false)).not.toContain("vscode-resource");
   });
 });
 
@@ -181,7 +181,6 @@ describe("the chrome", () => {
     expect(status.label).toBe("Local assets · 2 loaded · 1 missing · 1 outside project");
     expect(status.title).toContain("not valid send-ready email URLs");
     const page = previewHtml(NONCE, data({
-      localResourceSource: "https://file+.vscode-resource.vscode-cdn.net",
       localAssets: { resolved: 2, missing: ['images/<missing>.png'], blocked: ["../outside.png"] },
     }));
     expect(page).toContain("Local assets · 2 loaded · 1 missing · 1 outside project");

@@ -166,25 +166,15 @@ export interface PreviewData extends PreviewState {
   compositionLabel?: string;
   sourceLabel?: string;
   comparisonCards?: PreviewCardData[];
-  /** Webview CSP source used only for resolved local image files. */
-  localResourceSource?: string;
   localAssets?: LocalAssetSummary;
 }
 
 /** Content-Security-Policy for the webview, and so for the email inside it. */
-export function contentSecurityPolicy(
-  nonce: string,
-  loadRemoteImages: boolean,
-  localResourceSource?: string,
-): string {
+export function contentSecurityPolicy(nonce: string, loadRemoteImages: boolean): string {
   // `img-src` is the whole privacy story: with remote images off, an email can
   // only show what it carries inline, so previewing it sends no request to the
-  // sender's servers.
-  const img = [
-    ...(loadRemoteImages ? ["https:", "http:"] : []),
-    "data:",
-    ...(localResourceSource ? [localResourceSource] : []),
-  ].join(" ");
+  // sender's servers. Allowed local images arrive inline too, as data URLs.
+  const img = [...(loadRemoteImages ? ["https:", "http:"] : []), "data:"].join(" ");
   return [
     "default-src 'none'",
     `img-src ${img}`,
@@ -398,7 +388,7 @@ function comparisonCardHtml(
  * the surrounding controls or moving the outer workspace scroll position.
  */
 export function previewHtml(nonce: string, data: PreviewData): string {
-  const csp = contentSecurityPolicy(nonce, data.loadRemoteImages, data.localResourceSource);
+  const csp = contentSecurityPolicy(nonce, data.loadRemoteImages);
   const viewportWidth = normalizeViewportWidth(data.viewportWidth);
   const zoom = normalizeZoom(data.zoom);
   const scaledWidth = Math.round(viewportWidth * zoom * 100) / 100;
