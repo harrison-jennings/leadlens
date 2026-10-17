@@ -29,7 +29,8 @@ A new docs page needs an entry in the script's `DOCS` and `DESCRIPTIONS` maps, a
 | Path | Contents |
 |---|---|
 | `src/pages/` | The home, changelog, privacy and not-found pages, and `robots.txt`. |
-| `src/components/` | The header, footer, logo and product illustration, plus the docs header links and footer. |
+| `src/components/` | The header, footer, logo and product illustration, plus the docs header title, links and footer. |
+| `src/scripts/blink.ts` | The logo's eye: in the headers it looks around after load, then blinks every 8–12 seconds; in the footer it looks around once when scrolled into view. Still for visitors who prefer reduced motion. |
 | `src/styles/site.css` | Styles for the custom pages. |
 | `src/styles/starlight.css` | The docs theme in the Leadlens palette. |
 | `src/data/site.mjs` | Shared addresses, the tagline, the trademark notice and the client list. |

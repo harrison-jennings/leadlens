@@ -14,7 +14,7 @@ const { tone = "dark", current } = Astro.props;
     <!-- The visible wordmark is the link's name, so it says what people see
          (WCAG 2.5.3, label in name); "home" is added for screen readers. -->
     <a class="brand" href="/">
-      <LogoMark tile={tone === "dark" ? "#1B2640" : "#121A2B"} />
+      <LogoMark tile={tone === "dark" ? "#1B2640" : "#121A2B"} blink="repeat" />
       <span class="wordmark">lead<span class="dot">.</span>lens</span><span class="sr-only"> home</span>
     </a>
     <nav class="nav-links" aria-label="Main">

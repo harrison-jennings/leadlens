@@ -9,17 +9,14 @@ export default defineConfig({
     starlight({
       title: "Leadlens",
       description: TAGLINE,
-      logo: {
-        light: "./src/assets/generated/lockup-light.svg",
-        dark: "./src/assets/generated/lockup-dark.svg",
-        replacesTitle: true,
-      },
       favicon: "/generated/favicon.svg",
       social: [{ icon: "github", label: "GitHub", href: REPO_URL }],
       customCss: ["./src/styles/fonts.css", "./src/styles/starlight.css"],
       // The site has its own branded 404 page.
       disable404Route: true,
       components: {
+        // The docs header draws the live, blinking mark rather than a static lockup.
+        SiteTitle: "./src/components/StarlightSiteTitle.astro",
         SocialIcons: "./src/components/StarlightHeaderLinks.astro",
         Footer: "./src/components/StarlightFooter.astro",
       },

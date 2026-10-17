@@ -114,8 +114,6 @@ const assets = [
   ["docs/brand/leadlens-favicon-32.png", "public/generated/favicon-32.png"],
   ["docs/brand/leadlens-icon-1024.png", "public/generated/apple-touch-icon.png"],
   ["docs/brand/leadlens-social.png", "public/generated/og.png"],
-  ["docs/brand/leadlens-lockup-light.svg", "src/assets/generated/lockup-light.svg"],
-  ["docs/brand/leadlens-lockup-dark.svg", "src/assets/generated/lockup-dark.svg"],
   ["samples/images/hero.png", "public/generated/sample/hero.png"],
   ["samples/images/route.png", "public/generated/sample/route.png"],
   ["samples/images/kit.png", "public/generated/sample/kit.png"],

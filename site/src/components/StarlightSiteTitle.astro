@@ -1,0 +1,39 @@
+---
+// Starlight's site title, drawn with the live mark instead of the static lockup
+// image, so the docs header's logo blinks like the rest of the site's.
+import LogoMark from "./LogoMark.astro";
+const { siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a href={siteTitleHref} class="site-title sl-flex ll-brand">
+  <LogoMark size={32} tile="#121A2B" blink="repeat" />
+  <span class="ll-wordmark" translate="no">lead<span class="dot">.</span>lens</span>
+</a>
+
+<style>
+  .ll-brand {
+    align-items: center;
+    gap: 12px;
+    color: var(--sl-color-white);
+    text-decoration: none;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .ll-wordmark {
+    font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 600;
+    font-size: 21px;
+    letter-spacing: -0.04em;
+  }
+
+  .ll-wordmark .dot {
+    color: var(--sl-color-accent);
+  }
+
+  /* On the dark theme the tile takes the lighter colour the dark lockup uses
+     (docs/brand/README.md), as the static logo did. */
+  :global([data-theme="dark"]) .ll-brand :global(.logo-tile) {
+    fill: #1b2640;
+  }
+</style>
