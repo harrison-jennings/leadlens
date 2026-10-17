@@ -207,6 +207,44 @@ suite("the extension in a real editor", () => {
     assert.equal(css.getText(radius!.range), "border-radius: 8px");
   });
 
+  test("a stylesheet is read only from inside the email's folder, and only up to the email size limit", async () => {
+    // The email chooses which files are read, and it may be someone else's:
+    // a path out of the folder, a symbolic link out of it, or a huge file must
+    // not be read. Each holds a rule that would be reported if it were.
+    const contained = join(folder, "contained");
+    mkdirSync(contained, { recursive: true });
+    const rule = ".card {\n  border-radius: 8px;\n}\n";
+    writeFileSync(join(folder, "escape.css"), rule);
+    symlinkSync(join(folder, "escape.css"), join(contained, "linked-out.css"));
+    writeFileSync(join(contained, "huge.css"), rule + "/*" + "x".repeat(2 * 1024 * 1024) + "*/\n");
+    writeFileSync(join(contained, "inside.css"), ".row {\n  display: flex;\n}\n");
+    const email = [
+      '<html lang="en">',
+      "<head>",
+      '  <meta charset="utf-8"><title>T</title>',
+      '  <link rel="stylesheet" href="../escape.css">',
+      '  <link rel="stylesheet" href="linked-out.css">',
+      '  <link rel="stylesheet" href="huge.css">',
+      '  <link rel="stylesheet" href="inside.css">',
+      "</head>",
+      '<body><div class="card row">hi</div></body>',
+      "</html>",
+    ].join("\n");
+    writeFileSync(join(contained, "contained.html"), email);
+    const document = await vscode.workspace.openTextDocument(join(contained, "contained.html"));
+    await vscode.window.showTextDocument(document);
+
+    // The stylesheet inside the folder is still read and reported…
+    const inside = vscode.Uri.file(join(contained, "inside.css"));
+    await waitFor(() => leadlensDiagnostics(inside).some((d) => codeOf(d) === "display"));
+
+    // …and none of the others are.
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    for (const name of [join(folder, "escape.css"), join(contained, "linked-out.css"), join(contained, "huge.css")]) {
+      assert.equal(leadlensDiagnostics(vscode.Uri.file(name)).length, 0, `${name} was read`);
+    }
+  });
+
   test("a partial is not judged as a whole email", async () => {
     const document = await openLinted("partial.html", '<td><a href="http://x.test">Track</a></td>');
     const codes = leadlensDiagnostics(document.uri).map((d) => codeOf(d));

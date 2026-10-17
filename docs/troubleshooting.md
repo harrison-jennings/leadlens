@@ -29,7 +29,7 @@ Tokens without a fallback, and system tokens such as `{{system.unsubscribeLink}}
 ## Images don't appear in the preview
 
 - Remote images (`http://` or `https://`) are blocked until you click **Remote images** or turn on `leadlens.preview.loadRemoteImages`.
-- Local images must be referenced by a relative path and live inside the workspace folder. The preview lists images that are missing or outside the allowed folders. Images over 10 MB are listed as missing.
+- Local images must be referenced by a relative path and live inside the workspace folder. The preview lists images that are missing or outside the allowed folders. Images over 10 MB, and any beyond a total of 20 MB of embedded images in one preview, are listed as missing.
 
 ## "No physical mailing address detected" on an email that has one
 

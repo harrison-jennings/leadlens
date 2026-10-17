@@ -21,6 +21,7 @@ import {
   type PreviewValueChange,
 } from "./marketo-preview";
 import { PREPARED_HTML_SCHEME, PreparedHtmlProvider } from "./prepared-document";
+import { locateLocalFile } from "./local-files";
 import { ComponentPreviewService, type ResolvedComponentPreview } from "./component-preview";
 import {
   commentSyntaxAt,
@@ -792,6 +793,12 @@ function relintOpenDocuments() {
  * Analysing the email with its CSS is the only way to see the CSS at all: a
  * `<link>` is opaque, so a rule that breaks Outlook goes unreported until the
  * build inlines it, by which point nobody is looking.
+ *
+ * The email decides which files these are, and it may be someone else's. So a
+ * stylesheet is read only from inside the email's own folder boundary (see
+ * `locateLocalFile`), and only up to the size the email itself may be, in total
+ * as well as per file: the merged email is refused past that size anyway, and
+ * reading a huge file first would stall the extension host for nothing.
  */
 async function withStylesheets(
   document: vscode.TextDocument,
@@ -804,6 +811,7 @@ async function withStylesheets(
   }
 
   const sources = new Map<number, { content: string; uri: string }>();
+  let total = 0;
   for (const link of links) {
     const origin = originOf(baseSegments, link.start);
     if (!origin) continue;
@@ -812,14 +820,24 @@ async function withStylesheets(
       : origin.href
         ? vscode.Uri.joinPath(document.uri, "..", origin.href)
         : document.uri;
-    const uri = vscode.Uri.joinPath(owner, "..", link.href);
-    try {
-      sources.set(link.start, {
-        content: new TextDecoder().decode(await vscode.workspace.fs.readFile(uri)),
-        uri: uri.toString(),
-      });
-    } catch {
+    const file = locateLocalFile(link.href, owner);
+    if (file.status !== "found") {
       // Missing or unreadable: leave the link alone rather than guess.
+      if (file.status === "blocked") {
+        warnOnce(`${document.uri.fsPath}: not reading the stylesheet ${link.href}, which is outside the email's folder.`);
+      }
+      continue;
+    }
+    if (total + file.size > MAX_HTML_SIZE) {
+      warnOnce(`${document.uri.fsPath}: not reading the stylesheet ${link.href}, which would take the email over ${Math.round(MAX_HTML_SIZE / 1024)} KB.`);
+      continue;
+    }
+    try {
+      const content = new TextDecoder().decode(await vscode.workspace.fs.readFile(vscode.Uri.file(file.path)));
+      total += file.size;
+      sources.set(link.start, { content, uri: file.uri.toString() });
+    } catch {
+      // Unreadable after all: leave the link alone.
     }
   }
   const inlined = inlineStylesheetSources(text, sources);

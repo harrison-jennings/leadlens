@@ -40,6 +40,8 @@ The first release of Leadlens: email preview and linting for Adobe Marketo Engag
 ### Fixes
 
 - `include` patterns that name a folder, such as `emails/**/*.html`, now match files in that folder. They are relative to the workspace folder; previously such a pattern matched nothing, so Leadlens ignored every file.
+- Linked stylesheets are read only from inside the email's workspace folder, including after resolving symbolic links, and only up to the 2 MB email size limit in total. Previously an email could make Leadlens read any file it could reach, of any size.
+- The preview caps embedded local images at 20 MB in total, and keeps its cache of encoded images to a fixed size.
 - Local images now appear in the preview. They were found but failed to load, because the preview's sandboxed email frame can't fetch files from VS Code; Leadlens now embeds them directly.
 
 ### Known limitations

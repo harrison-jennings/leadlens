@@ -1,13 +1,20 @@
 import * as vscode from "vscode";
-import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { extname } from "node:path";
+import { locateLocalFile } from "../local-files";
 import type { LocalAssetResolution } from "./local-assets";
+import { LruCache } from "./lru";
+
+export { parentUri } from "../local-files";
 
 /**
  * Larger files are reported as missing rather than embedded: every render
  * carries the image in the preview's HTML.
  */
 export const MAX_LOCAL_ASSET_BYTES = 10 * 1024 * 1024;
+
+/** Encoded images kept between renders, in characters of data URL. */
+const MAX_CACHED_CHARACTERS = 64 * 1024 * 1024;
 
 const MIME_TYPES: Record<string, string> = {
   ".apng": "image/apng",
@@ -23,7 +30,10 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 /** Encoded files, reused until the file changes. Keyed by real path. */
-const encoded = new Map<string, { mtimeMs: number; size: number; uri: string }>();
+const encoded = new LruCache<{ mtimeMs: number; size: number; uri: string }>(
+  MAX_CACHED_CHARACTERS,
+  (entry) => entry.uri.length,
+);
 
 /**
  * Resolve one preview-only path without reading outside its project root.
@@ -38,42 +48,16 @@ export function resolveLocalAssetForPreview(
   raw: string,
   owner: vscode.Uri,
 ): { resolution: LocalAssetResolution } {
-  const parts = /^([^?#]*)(?:\?([^#]*))?(?:#(.*))?$/.exec(raw);
-  let path = parts?.[1] ?? raw;
-  try {
-    path = decodeURIComponent(path);
-  } catch {
-    return { resolution: { status: "blocked", displayPath: raw } };
-  }
-  path = path.replace(/\\/g, "/");
-
-  const folder = vscode.workspace.getWorkspaceFolder(owner);
-  const root = folder?.uri ?? parentUri(owner);
-  const candidate = path.startsWith("/")
-    ? folder ? vscode.Uri.joinPath(folder.uri, path.slice(1)) : undefined
-    : vscode.Uri.joinPath(parentUri(owner), path);
-  if (!candidate || !inside(candidate, root)) {
-    return { resolution: { status: "blocked", displayPath: raw } };
-  }
-  // Only local files can be read here; a virtual workspace's files can't.
-  if (candidate.scheme !== "file" || !existsSync(candidate.fsPath)) {
-    return { resolution: { status: "missing", displayPath: raw } };
+  const file = locateLocalFile(raw, owner);
+  if (file.status !== "found") return { resolution: { status: file.status, displayPath: raw } };
+  if (file.size > MAX_LOCAL_ASSET_BYTES) {
+    return { resolution: { status: "missing", displayPath: `${raw} (over 10 MB)` } };
   }
   try {
-    const stat = statSync(candidate.fsPath);
-    if (!stat.isFile()) return { resolution: { status: "missing", displayPath: raw } };
-    const realRoot = realpathSync(root.fsPath);
-    const realCandidate = realpathSync(candidate.fsPath);
-    if (!insideFilePath(realCandidate, realRoot)) {
-      return { resolution: { status: "blocked", displayPath: raw } };
-    }
-    if (stat.size > MAX_LOCAL_ASSET_BYTES) {
-      return { resolution: { status: "missing", displayPath: `${raw} (over 10 MB)` } };
-    }
     // A fragment still selects an SVG view; a query means nothing to a file.
-    const fragment = parts?.[3] === undefined ? "" : `#${parts[3]}`;
+    const fragment = file.fragment === undefined ? "" : `#${file.fragment}`;
     return {
-      resolution: { status: "resolved", uri: `${dataUri(realCandidate, stat)}${fragment}`, displayPath: raw },
+      resolution: { status: "resolved", uri: `${dataUri(file.path, file)}${fragment}`, displayPath: raw },
     };
   } catch {
     return { resolution: { status: "missing", displayPath: raw } };
@@ -87,24 +71,4 @@ function dataUri(file: string, stat: { mtimeMs: number; size: number }): string 
   const uri = `data:${type};base64,${readFileSync(file).toString("base64")}`;
   encoded.set(file, { mtimeMs: stat.mtimeMs, size: stat.size, uri });
   return uri;
-}
-
-export function parentUri(uri: vscode.Uri): vscode.Uri {
-  const index = uri.path.lastIndexOf("/");
-  return uri.with({ path: index <= 0 ? "/" : uri.path.slice(0, index), query: "", fragment: "" });
-}
-
-function inside(candidate: vscode.Uri, root: vscode.Uri): boolean {
-  if (candidate.scheme !== root.scheme || candidate.authority !== root.authority) return false;
-  const rootPath = root.path.endsWith("/") ? root.path : `${root.path}/`;
-  return candidate.path === root.path || candidate.path.startsWith(rootPath);
-}
-
-function insideFilePath(candidate: string, root: string): boolean {
-  const normalise = (value: string) =>
-    (process.platform === "win32" ? value.toLowerCase() : value).replace(/\\/g, "/");
-  const candidatePath = normalise(candidate);
-  const rootPath = normalise(root);
-  const prefix = rootPath.endsWith("/") ? rootPath : `${rootPath}/`;
-  return candidatePath === rootPath || candidatePath.startsWith(prefix);
 }
