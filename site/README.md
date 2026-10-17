@@ -41,3 +41,5 @@ Every page loads Vercel Web Analytics, which counts page views without cookies: 
 ## Deployment
 
 Vercel builds the `site` folder: the root directory is `site`, and Vercel detects Astro and Bun automatically. `vercel.json` skips a build when nothing the site uses has changed: the site itself, `docs/`, `CHANGELOG.md`, the sample images and the extension's `package.json` (which supplies the version and VS Code requirement shown on the download buttons). A commit with no parent, such as a repository's first, always builds. The Site workflow in `.github/workflows/site.yml` also builds the site on every pull request that touches it.
+
+`vercel.json` also sets the security headers on every response: a content security policy that allows only the site's own scripts, styles, images, fonts and requests (inline scripts and WebAssembly are allowed because the docs theme and its search need them), `nosniff`, a referrer policy, a permissions policy that turns off device features, and no framing. Anything that loads from another origin, such as a new font or embed, has to be added to the policy, or the browser will block it.
