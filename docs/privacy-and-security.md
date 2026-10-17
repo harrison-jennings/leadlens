@@ -17,8 +17,9 @@ Emails often contain tracking pixels, links with personal identifiers and conten
 
 ## Local files
 
-- The preview can show images from your computer only when they're referenced by a relative path and the file is inside the email's workspace folder, or beside a template you've chosen yourself.
-- Paths that try to leave those folders, including through symbolic links, are blocked and labelled in the preview.
+- An email can refer to two kinds of local file: images, and linked stylesheets. Leadlens reads them only when they're referenced by a relative path and the file is inside the email's workspace folder (or, outside a workspace, beside the email), or beside a template you've chosen yourself. The same rule applies in Restricted Mode.
+- Paths that try to leave those folders, including through symbolic links, are blocked. Blocked images are labelled in the preview; blocked stylesheets are noted in the **Leadlens** output channel.
+- Size limits stop an email from making Leadlens read very large files: 10 MB per image and 20 MB of embedded images per preview, and linked stylesheets only up to the 2 MB email limit, in total.
 - Leadlens reads each allowed image itself and embeds it in the preview, so the preview has no access to your files of its own.
 
 ## Your source is never changed

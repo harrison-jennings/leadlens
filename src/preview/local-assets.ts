@@ -131,10 +131,20 @@ function isLocalAsset(value: string): boolean {
   return true;
 }
 
+/**
+ * Embedded local images allowed in one preview, in characters of data URL.
+ *
+ * Each image is capped on its own, but an email can reference many, and the
+ * preview copies the email into every client card it shows. Past this total,
+ * further images are reported as missing rather than embedded.
+ */
+export const MAX_PREVIEW_ASSET_CHARACTERS = 20 * 1024 * 1024;
+
 /** Replace resolvable paths with stable markers before client transformation. */
 export function prepareLocalAssets(
   html: string,
   resolve: (reference: LocalAssetReference) => LocalAssetResolution,
+  maxTotalCharacters = MAX_PREVIEW_ASSET_CHARACTERS,
 ): PreparedLocalAssets {
   const references = localAssetReferences(html);
   const replacements: PreparedLocalAssets["replacements"] = [];
@@ -144,8 +154,13 @@ export function prepareLocalAssets(
   let batch = 0;
   while (html.includes(`${PLACEHOLDER_ORIGIN}${batch}-`)) batch += 1;
 
+  let total = 0;
   for (const [index, reference] of references.entries()) {
-    const result = resolve(reference);
+    let result = resolve(reference);
+    if (result.uri && total + result.uri.length > maxTotalCharacters) {
+      const display = result.displayPath ?? reference.value;
+      result = { status: "missing", displayPath: `${display} (preview image total reached)` };
+    }
     if (!result.uri) {
       const target = result.status === "missing" ? summary.missing : summary.blocked;
       const display = result.displayPath ?? reference.value;
@@ -156,6 +171,7 @@ export function prepareLocalAssets(
     output += html.slice(cursor, reference.start) + placeholder;
     cursor = reference.end;
     replacements.push({ placeholder, uri: result.uri });
+    total += result.uri.length;
     summary.resolved += 1;
   }
 

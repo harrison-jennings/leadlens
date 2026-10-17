@@ -91,6 +91,8 @@ The quick-fix menu on any finding can insert the right comment for you. Comments
 
 Emails often keep their CSS in a separate file during development. Leadlens reads local `<link rel="stylesheet">` files, analyses the email with that CSS included, and reports CSS findings in the stylesheet itself, naming the email that linked it. Editing the stylesheet re-checks the emails that use it.
 
+Only stylesheets inside the email's workspace folder are read, up to the 2 MB email size limit in total. A stylesheet outside the folder, or one that would take the email over the limit, isn't read, and the **Leadlens** output channel says why.
+
 The `<link>` itself is still reported, because email clients ignore external stylesheets; your build or ESP needs to inline the CSS before sending. Turn this off with `leadlens.resolveStylesheetLinks`.
 
 ## Fragments and partials

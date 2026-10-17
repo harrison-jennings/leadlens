@@ -169,6 +169,19 @@ describe("workspace-relative image paths", () => {
     expect(materialized).toContain("https://webview.local/images%2Fhero.png");
     expect(materialized).not.toContain("https://leadlens.local.invalid/");
   });
+  test("stops embedding images once the preview's total is reached", () => {
+    // Each image is capped on its own; this caps them together, because an
+    // email can reference many and every client card carries a copy.
+    const html = '<img src="a.png"><img src="b.png"><img src="c.png">';
+    const prepared = prepareLocalAssets(
+      html,
+      (reference) => ({ status: "resolved", uri: `data:image/png;base64,${"A".repeat(400)}`, displayPath: reference.value }),
+      1_000,
+    );
+    expect(prepared.summary.resolved).toBe(2);
+    expect(prepared.summary.missing).toEqual(["c.png (preview image total reached)"]);
+    expect(prepared.html).toContain('src="c.png"');
+  });
 });
 
 describe("the chrome", () => {
