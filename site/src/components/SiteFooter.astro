@@ -1,4 +1,5 @@
 ---
+import LogoMark from "./LogoMark.astro";
 import { DOWNLOAD_URL, PORTFOLIO_URL, REPO_URL, TAGLINE, TRADEMARK_NOTICE } from "../data/site.mjs";
 const year = new Date().getFullYear();
 ---
@@ -7,7 +8,10 @@ const year = new Date().getFullYear();
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <span class="wordmark">lead<span class="dot">.</span>lens</span>
+        <a class="brand" href="/">
+          <LogoMark blink="once" />
+          <span class="wordmark">lead<span class="dot">.</span>lens</span><span class="sr-only"> home</span>
+        </a>
         <p>{TAGLINE}</p>
       </div>
       <div class="footer-columns">

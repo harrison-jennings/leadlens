@@ -7,5 +7,4 @@ dist/
 # ../docs/brand and ../samples/images. Never edit these copies.
 src/content/docs/docs/
 src/generated/
-src/assets/generated/
 public/generated/
