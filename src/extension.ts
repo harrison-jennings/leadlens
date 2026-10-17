@@ -41,10 +41,14 @@ import {
   type Segment,
 } from "./sharded";
 import {
+  configProblems,
   mergeConfig,
+  occurrenceLimit,
   overriddenFields,
   parseProjectConfig,
   parseRules,
+  projectConfigBody,
+  withKnownValues,
   type EditorConfig,
   type ProjectConfig,
   type ProjectConfigSource,
@@ -54,6 +58,8 @@ import {
 const DEBOUNCE_MS = 300;
 
 let diagnostics: vscode.DiagnosticCollection;
+/** Problems in project config files themselves: unknown clients, categories, severities. */
+let configDiagnostics: vscode.DiagnosticCollection;
 let status: vscode.StatusBarItem;
 let output: vscode.OutputChannel;
 const PREVIEW_VALUES_KEY = "leadlens.marketo.previewValues";
@@ -131,6 +137,7 @@ export function activate(context: vscode.ExtensionContext) {
   extensionContext = context;
   previewValues = context.workspaceState.get<Record<string, unknown>>(PREVIEW_VALUES_KEY, Object.create(null));
   diagnostics = vscode.languages.createDiagnosticCollection("leadlens");
+  configDiagnostics = vscode.languages.createDiagnosticCollection("leadlens-config");
   status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   status.command = "leadlens.showReport";
   output = vscode.window.createOutputChannel("Leadlens");
@@ -163,6 +170,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     diagnostics,
+    configDiagnostics,
     status,
     output,
     preparedDocuments,
@@ -376,14 +384,50 @@ function settingsFor(document: vscode.TextDocument): EditorConfig {
     );
   }
 
+  const raw = { clients: setting<string[]>("clients", []), skip: setting<string[]>("skip", []) };
+  for (const problem of configProblems(raw, CLIENT_IDS)) warnOnce(`leadlens.${problem.field}: ${problem.message}`);
   const settings: EditorConfig = {
-    clients: setting<string[]>("clients", []),
-    skip: setting<string[]>("skip", []),
+    ...withKnownValues(raw, CLIENT_IDS, "all clients"),
     include: setting<string[]>("include", []),
     rules: parsed.rules,
   };
   const folder = vscode.workspace.getWorkspaceFolder(document.uri);
   return mergeConfig(settings, folder ? projectConfigs.get(folder.uri.toString()) : undefined);
+}
+
+const CLIENT_IDS = EMAIL_CLIENTS.map((client) => client.id);
+
+/**
+ * Underline each unusable value in a project config file, where it was typed.
+ *
+ * The output channel is easy to miss, and a config that is quietly half-ignored
+ * is how a team ends up trusting a panel that isn't checking what they think.
+ */
+function reportConfigProblems(uri: vscode.Uri, text: string, problems: ReturnType<typeof configProblems>) {
+  if (problems.length === 0) {
+    configDiagnostics.delete(uri);
+    return;
+  }
+  const lines = text.split("\n");
+  const positionAt = (offset: number) => {
+    let remaining = offset;
+    for (let line = 0; line < lines.length; line++) {
+      if (remaining <= lines[line].length) return new vscode.Position(line, remaining);
+      remaining -= lines[line].length + 1;
+    }
+    return new vscode.Position(0, 0);
+  };
+  configDiagnostics.set(uri, problems.map((problem) => {
+    const quoted = JSON.stringify(problem.value);
+    const at = text.indexOf(quoted);
+    const range = at === -1
+      ? new vscode.Range(0, 0, 0, 0)
+      : new vscode.Range(positionAt(at), positionAt(at + quoted.length));
+    const diagnostic = new vscode.Diagnostic(range, problem.message, vscode.DiagnosticSeverity.Warning);
+    diagnostic.source = "leadlens";
+    return diagnostic;
+  }));
+  for (const problem of problems) output.appendLine(`${uri.fsPath}: ${problem.message}`);
 }
 
 /** Say something in the output channel, but only the first time. */
@@ -396,6 +440,7 @@ function warnOnce(message: string) {
 
 async function loadProjectConfigs() {
   projectConfigs.clear();
+  configDiagnostics.clear();
   for (const folder of vscode.workspace.workspaceFolders ?? []) {
     projectConfigs.set(folder.uri.toString(), await readProjectConfig(folder));
   }
@@ -421,10 +466,12 @@ async function readProjectConfig(
     }
     const parsed = parseProjectConfig(text, kind);
     if (parsed) {
+      reportConfigProblems(uri, text, configProblems(projectConfigBody(text, kind), CLIENT_IDS));
+      const usable = withKnownValues(parsed, CLIENT_IDS, "unset");
       output.appendLine(
-        `${name}: using project config for ${overriddenFields(parsed).join(", ")}`,
+        `${name}: using project config for ${overriddenFields(usable).join(", ") || "nothing"}`,
       );
-      return parsed;
+      return usable;
     }
     // A dedicated config file that exists but does not parse is worth saying
     // out loud; silently using different settings is how a team drifts.
@@ -872,7 +919,7 @@ async function publish(
 ) {
   const findings = toFindings(report, {
     clients: settingsFor(document).clients,
-    maxOccurrencesPerRule: setting("maxOccurrencesPerRule", 20, document.uri),
+    maxOccurrencesPerRule: occurrenceLimit(setting<unknown>("maxOccurrencesPerRule", 20, document.uri)),
     rules: settingsFor(document).rules,
     marketoOutput: marketo ? { unresolved: marketo.unresolved } : undefined,
   });
@@ -1005,7 +1052,7 @@ function marketoFindings(
   document: vscode.TextDocument,
 ): Finding[] {
   const rules = settingsFor(document).rules;
-  const limit = setting("maxOccurrencesPerRule", 20, document.uri);
+  const limit = occurrenceLimit(setting<unknown>("maxOccurrencesPerRule", 20, document.uri));
   const counts = new Map<string, number>();
   const findings: Finding[] = [];
   for (const issue of issues) {

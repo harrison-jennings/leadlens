@@ -111,7 +111,30 @@
         "leadlens.clients": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "gmail-web",
+              "gmail-android",
+              "gmail-ios",
+              "outlook-web",
+              "outlook-windows",
+              "outlook-windows-legacy",
+              "outlook-ios",
+              "outlook-android",
+              "outlook-macos",
+              "apple-mail-macos",
+              "apple-mail-ios",
+              "yahoo-mail",
+              "yahoo-mail-android",
+              "yahoo-mail-ios",
+              "samsung-mail",
+              "thunderbird",
+              "hey-mail",
+              "protonmail",
+              "aol",
+              "fastmail",
+              "superhuman"
+            ]
           },
           "default": [],
           "markdownDescription": "Client IDs to report on. Empty means all 21. Run `Leadlens: Show Full Report` to see the list."
@@ -156,7 +179,8 @@
           "markdownDescription": "Severity per rule, keyed by the code shown in the Problems panel — a CSS property (`border-radius`) or a rule id (`img-missing-alt`). `off` hides it entirely. Set it in `.leadlensrc` to make it the team's.\n\n```json\n{ \"border-radius\": \"error\", \"font-size\": \"off\" }\n```"
         },
         "leadlens.maxOccurrencesPerRule": {
-          "type": "number",
+          "type": "integer",
+          "minimum": 1,
           "default": 20,
           "markdownDescription": "A single broken rule can occur in dozens of elements. Underline at most this many of them per rule, so one mistake doesn't fill the Problems panel."
         },
@@ -182,6 +206,29 @@
         },
         "leadlens.preview.defaultClient": {
           "type": "string",
+          "enum": [
+            "gmail-web",
+            "gmail-android",
+            "gmail-ios",
+            "outlook-web",
+            "outlook-windows",
+            "outlook-windows-legacy",
+            "outlook-ios",
+            "outlook-android",
+            "outlook-macos",
+            "apple-mail-macos",
+            "apple-mail-ios",
+            "yahoo-mail",
+            "yahoo-mail-android",
+            "yahoo-mail-ios",
+            "samsung-mail",
+            "thunderbird",
+            "hey-mail",
+            "protonmail",
+            "aol",
+            "fastmail",
+            "superhuman"
+          ],
           "default": "gmail-web",
           "markdownDescription": "Client the preview opens on. Run `Leadlens: Show Full Report` to see the IDs."
         },
@@ -226,10 +273,14 @@
     "@types/vscode": "^1.90.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.1.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.28.2",
     "mjml": "^5.4.0",
-    "mocha": "^11.8.0",
+    "mocha": "^12.0.3",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "diff": "^8.0.3",
+    "serialize-javascript": "^7.0.5"
   },
   "icon": "docs/icon.png",
   "galleryBanner": {
