@@ -49,7 +49,9 @@ Or add the same object under a `leadlens` key in the project's `package.json`.
 
 The project file can set `clients`, `skip`, `include` and `rules`. For each field it sets, it overrides the editor setting; fields it leaves out are still decided by each person's settings. `rules` replaces the editor's rule map as a whole rather than merging with it, so the team's policy is never half one source and half another.
 
-Leadlens reloads the file when it changes. If it isn't valid JSON, Leadlens says so in the **Leadlens** output channel and falls back to editor settings. An invalid severity in `rules` is reported the same way and ignored.
+Leadlens reloads the file when it changes. If it isn't valid JSON, Leadlens says so in the **Leadlens** output channel and falls back to editor settings.
+
+A value Leadlens doesn't recognise (a misspelt client ID, an unknown check category or an invalid severity) is underlined in the file and listed in the Problems panel, and ignored. If every client in `clients` is unrecognised, the field is ignored entirely, so a typo can't hide every finding. In editor settings, VS Code flags unknown clients and categories itself.
 
 The **Leadlens** output channel records which fields the project file is deciding each time it's loaded.
 

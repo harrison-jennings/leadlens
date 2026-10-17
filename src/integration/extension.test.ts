@@ -583,6 +583,31 @@ suite("the extension in a real editor", () => {
     }
   });
 
+  test("a misspelt client in .leadlensrc is underlined and doesn't hide findings", async () => {
+    const workspace = vscode.workspace.workspaceFolders?.[0];
+    assert.ok(workspace, "the integration workspace is not open");
+    const rc = join(workspace!.uri.fsPath, ".leadlensrc");
+    const email = join(workspace!.uri.fsPath, "typo-client.html");
+    writeFileSync(email, EMAIL);
+    try {
+      writeFileSync(rc, '{\n  "clients": ["gmail-weeb"]\n}\n');
+      const rcUri = vscode.Uri.file(rc);
+      await waitFor(() => vscode.languages.getDiagnostics(rcUri).some((d) => d.message.includes("gmail-weeb")));
+      const warning = vscode.languages.getDiagnostics(rcUri)[0];
+      const rcText = (await vscode.workspace.openTextDocument(rcUri)).getText(warning.range);
+      assert.equal(rcText, '"gmail-weeb"');
+
+      // Before, the filter matched no client and every compatibility finding vanished.
+      const document = await vscode.workspace.openTextDocument(email);
+      await vscode.window.showTextDocument(document);
+      await waitFor(() => leadlensDiagnostics(document.uri).some((d) => codeOf(d) === "border-radius"));
+    } finally {
+      rmSync(rc, { force: true });
+      rmSync(email, { force: true });
+      await waitFor(() => vscode.languages.getDiagnostics(vscode.Uri.file(rc)).length === 0);
+    }
+  });
+
   test("Marketo syntax replaces generic token errors and keeps source positions", async () => {
     const source = [
       '<html lang="en"><head><meta charset="utf-8"><title>Marketo</title>',

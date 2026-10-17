@@ -7,8 +7,9 @@
 # merge to main publishes a new build (see ci.yml).
 #
 # Version updates are limited to the engine. The build tools are not worth a
-# stream of PRs; vulnerable dependencies still get Dependabot security PRs,
-# which are enabled in the repository settings.
+# stream of PRs. Dependabot security PRs are enabled in the repository settings,
+# but GitHub only sees direct dependencies (it doesn't read bun.lock), so the
+# Audit workflow checks the full dependency tree every week.
 
 version: 2
 updates:

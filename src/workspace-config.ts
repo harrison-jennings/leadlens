@@ -10,6 +10,8 @@
  * Free of the `vscode` module: the merge and the parse are plain functions.
  */
 
+import type { AuditOptions } from "@emailens/engine";
+
 /** What a rule may be turned into. `off` means not reported at all. */
 export type RuleSeverity = "error" | "warning" | "info" | "off";
 
@@ -127,4 +129,116 @@ export function mergeConfig(settings: EditorConfig, project?: ProjectConfig): Ed
 export function overriddenFields(project?: ProjectConfig): string[] {
   if (!project) return [];
   return ALL_FIELDS.filter((field) => project[field] !== undefined);
+}
+
+type SkipCategory = NonNullable<AuditOptions["skip"]>[number];
+
+/**
+ * Every check category the engine can skip. A record rather than a list, so a
+ * category the engine adds or renames is a type error here, not a value that
+ * quietly stops being recognised.
+ */
+const SKIP_CATEGORY_SET: Record<SkipCategory, true> = {
+  spam: true,
+  links: true,
+  accessibility: true,
+  images: true,
+  compatibility: true,
+  inboxPreview: true,
+  size: true,
+  templateVariables: true,
+  overflow: true,
+  visual: true,
+  darkContrast: true,
+  mobileContrast: true,
+  design: true,
+  vml: true,
+  styleSurvival: true,
+  targeting: true,
+};
+export const SKIP_CATEGORIES = Object.keys(SKIP_CATEGORY_SET) as SkipCategory[];
+
+/** One value a config names that Leadlens can't use, and where it was. */
+export interface ConfigProblem {
+  field: "clients" | "skip" | "rules";
+  /** The text to point at: the value, or the rule name for a bad severity. */
+  value: string;
+  message: string;
+}
+
+/**
+ * Values a config names that Leadlens doesn't recognise.
+ *
+ * Each is ignored rather than trusted. A misspelt client ID in `clients` would
+ * otherwise filter every compatibility finding away, and a misspelt category in
+ * `skip` would leave a check running that someone believes is off. Either way
+ * the panel would be quietly wrong, so each one is reported.
+ */
+export function configProblems(body: unknown, knownClients: readonly string[]): ConfigProblem[] {
+  if (!body || typeof body !== "object") return [];
+  const record = body as Record<string, unknown>;
+  const problems: ConfigProblem[] = [];
+  const strings = (value: unknown) =>
+    Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
+
+  for (const client of strings(record.clients)) {
+    if (!knownClients.includes(client)) {
+      problems.push({ field: "clients", value: client, message: `Unknown client ID "${client}", so it's ignored.` });
+    }
+  }
+  for (const category of strings(record.skip)) {
+    if (!(SKIP_CATEGORIES as string[]).includes(category)) {
+      problems.push({ field: "skip", value: category, message: `Unknown check category "${category}", so it's ignored.` });
+    }
+  }
+  if (record.rules && typeof record.rules === "object" && !Array.isArray(record.rules)) {
+    for (const [rule, severity] of Object.entries(record.rules)) {
+      if (typeof severity !== "string" || !SEVERITIES.includes(severity)) {
+        problems.push({
+          field: "rules",
+          value: rule,
+          message: `"${rule}": ${JSON.stringify(severity)} isn't a severity, so it's ignored. Use "error", "warning", "info" or "off".`,
+        });
+      }
+    }
+  }
+  return problems;
+}
+
+/**
+ * The same config with unrecognised clients and categories removed.
+ *
+ * A `clients` list left empty by this means "every client", not "none": a list
+ * of only typos must not hide every finding. In a project file it's left unset,
+ * so each person's own setting applies instead.
+ */
+export function withKnownValues<T extends { clients?: string[]; skip?: string[] }>(
+  config: T,
+  knownClients: readonly string[],
+  noClientsLeft: "all clients" | "unset",
+): T {
+  const out = { ...config };
+  if (config.clients) {
+    const clients = config.clients.filter((client) => knownClients.includes(client));
+    // An empty list was already "every client"; only a list of nothing but typos changes.
+    if (clients.length || config.clients.length === 0 || noClientsLeft === "all clients") out.clients = clients;
+    else delete out.clients;
+  }
+  if (config.skip) out.skip = config.skip.filter((category) => (SKIP_CATEGORIES as string[]).includes(category));
+  return out;
+}
+
+/** The underline cap per rule: a whole number, at least 1. */
+export function occurrenceLimit(value: unknown, fallback = 20): number {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.floor(value)) : fallback;
+}
+
+/** The object a project file's settings live in: the file, or its package.json key. */
+export function projectConfigBody(source: string, from: ProjectConfigSource): unknown {
+  try {
+    const parsed = JSON.parse(source) as Record<string, unknown>;
+    return from.startsWith("package:") ? parsed?.[from.slice("package:".length)] : parsed;
+  } catch {
+    return undefined;
+  }
 }

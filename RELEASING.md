@@ -17,6 +17,10 @@ The newest build is always available at `releases/latest/download/leadlens.vsix`
 
 Dependabot opens a pull request when `@emailens/engine` publishes a new version. Merging it once CI passes produces a new latest build with the updated compatibility data.
 
+## Security advisories
+
+The **Audit** workflow checks every installed package, for the extension and the website, against published advisories: weekly, on pull requests that change dependencies, and on demand from the Actions tab. It isn't a required check, so a new advisory never blocks merging; a failed run notifies the repository owner. GitHub's own Dependabot alerts only see direct dependencies, because they don't read `bun.lock`.
+
 ## Milestone versions
 
 To mark a significant release:
