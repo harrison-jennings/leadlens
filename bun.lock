@@ -5,7 +5,7 @@
     "": {
       "name": "leadlens",
       "dependencies": {
-        "@emailens/engine": "0.14.10",
+        "@emailens/engine": "0.15.0",
       },
       "devDependencies": {
         "@types/bun": "^1.3.14",
@@ -36,7 +36,7 @@
 
     "@colordx/core": ["@colordx/core@5.6.0", "", {}, "sha512-EDlcg/Hmlj1WuFh/Os9YhA+A2aasB2XlgwFfGePUDuW7fVHC07HBi5AFIMx0Ct1eM8kHM9NRyOtZ0MuVYa8xvg=="],
 
-    "@emailens/engine": ["@emailens/engine@0.14.10", "", { "dependencies": { "cheerio": "^1.2.0", "css-tree": "^3.1.0" }, "peerDependencies": { "@maizzle/framework": ">=5.0.0 <7.0.0", "@react-email/components": ">=0.0.36", "@react-email/render": ">=1.0.0", "isolated-vm": ">=5.0.0", "mjml": ">=4.0.0", "react": "^18.0.0 || ^19.0.0", "sucrase": "^3.35.0" }, "optionalPeers": ["@maizzle/framework", "@react-email/components", "@react-email/render", "isolated-vm", "mjml", "react", "sucrase"] }, "sha512-GYCNX7YMQvJp3N1YmLxg2ZIxL0Z60U2oKiO1zCJaMmXNupKa7CuHkB+XJjNqBsgKlkHw0KWY/YYZGep24m24hA=="],
+    "@emailens/engine": ["@emailens/engine@0.15.0", "", { "dependencies": { "cheerio": "^1.2.0", "css-tree": "^3.1.0" }, "peerDependencies": { "@maizzle/framework": ">=5.0.0 <7.0.0", "@react-email/components": ">=0.0.36", "@react-email/render": ">=1.0.0", "isolated-vm": ">=5.0.0", "mjml": ">=4.0.0", "react": "^18.0.0 || ^19.0.0", "sucrase": "^3.35.0" }, "optionalPeers": ["@maizzle/framework", "@react-email/components", "@react-email/render", "isolated-vm", "mjml", "react", "sucrase"] }, "sha512-srkwFt9B7w89ibaqIgEhaT53InTQlK1zCsF42noZFG9nMduVmWd6Jgh4FKCybCMvoijOW4sDMHpkXeTn/uE5rQ=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.28.2", "", { "os": "aix", "cpu": "ppc64" }, "sha512-XExcO+dvLKvVtNTibSTBej1NCAbaGhWn9Ww1ZPx80qsahhPFe/8jgWP0IchNe0F3HwkU7n8ejhH8bjonqht8mQ=="],
 
