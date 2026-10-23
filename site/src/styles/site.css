@@ -591,6 +591,13 @@ code {
   color: #8b949e;
 }
 
+/* One slot for every severity icon, so each row's text starts in line. */
+.sev-warn,
+.sev-info {
+  flex: 0 0 1em;
+  text-align: center;
+}
+
 .sev-warn { color: var(--warn); }
 .sev-info { color: #3794ff; }
 

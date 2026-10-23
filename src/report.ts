@@ -5,7 +5,7 @@
  * it can be tested against the real engine without an editor. `extension.ts`
  * maps the result onto VS Code's types.
  */
-import { EMAIL_CLIENTS } from "@emailens/engine";
+import { CSS_SUPPORT, EMAIL_CLIENTS } from "@emailens/engine";
 import type { AuditReport, CSSWarning, SourceLocation } from "@emailens/engine";
 
 const CLIENT_NAMES = new Map(EMAIL_CLIENTS.map((c) => [c.id, c.name]));
@@ -249,6 +249,12 @@ function appendContextFindings(
  * six identical squiggles on the same characters — plus more for the clients
  * where support is merely partial — buries it. So they collapse into a single
  * finding whose message names them, at the worst severity present.
+ *
+ * "Ignored" is not "partial". `@media` and dark-mode CSS are info in a client
+ * that skips them, because the email falls back to its inline light, desktop
+ * layout there; calling Outlook Classic's support for `@media` partial would
+ * be wrong. The engine's support table, which the hovers also read, tells the
+ * two apart.
  */
 function compatibilityFindings(
   warnings: CSSWarning[],
@@ -260,6 +266,7 @@ function compatibilityFindings(
     loc?: SourceLocation;
     severity: Severity;
     unsupported: string[];
+    ignored: string[];
     partial: string[];
   }
   const groups = new Map<string, Group>();
@@ -273,12 +280,15 @@ function compatibilityFindings(
         loc,
         severity: "info" as Severity,
         unsupported: [],
+        ignored: [],
         partial: [],
       };
-      // "info" is the engine's severity for partial support; anything worse
-      // means the property is dropped outright in that client.
-      if (w.severity === "info") group.partial.push(w.client);
-      else group.unsupported.push(w.client);
+      // Anything worse than info means the property is dropped outright in
+      // that client, with a visible cost. Info is partial support, or a
+      // feature the client skips harmlessly.
+      if (w.severity !== "info") group.unsupported.push(w.client);
+      else if (CSS_SUPPORT[w.property]?.[w.client] === "unsupported") group.ignored.push(w.client);
+      else group.partial.push(w.client);
       group.severity = worseOf(group.severity, w.severity);
       groups.set(key, group);
     }
@@ -296,8 +306,9 @@ function compatibilityFindings(
 
     const parts: string[] = [];
     if (group.unsupported.length) parts.push(`not supported in ${describe(group.unsupported)}`);
+    if (group.ignored.length) parts.push(`ignored by ${describe(group.ignored)}`);
     if (group.partial.length) parts.push(`partial support in ${describe(group.partial)}`);
-    const involved = [...group.unsupported, ...group.partial];
+    const involved = [...group.unsupported, ...group.ignored, ...group.partial];
 
     findings.push({
       severity: group.severity,

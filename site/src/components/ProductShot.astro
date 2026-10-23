@@ -9,8 +9,8 @@
 // same story. It's decorative, so screen readers get one summary instead.
 
 const cards = [
-  { name: "Gmail", mode: "light", score: "94", badge: "#3FD6C1", theme: "light", button: "border-radius:24px" },
-  { name: "Outlook Classic", mode: "light", score: "76", badge: "#F2B544", theme: "light", button: "display:inline;padding:0;border-radius:0" },
+  { name: "Gmail", mode: "light", score: "100", badge: "#3FD6C1", theme: "light", button: "border-radius:24px" },
+  { name: "Outlook Classic", mode: "light", score: "85", badge: "#F2B544", theme: "light", button: "display:inline;padding:0;border-radius:0" },
   { name: "Apple Mail iOS", mode: "dark", score: "100", badge: "#3FD6C1", theme: "dark", button: "border-radius:24px" },
 ];
 const compactCards = [cards[0], cards[1]];
@@ -45,9 +45,9 @@ const compactCards = [cards[0], cards[1]];
         </div>
         <div class="problems">
           <div class="problems-title">Problems</div>
-          <div class="problem"><span class="sev-warn">▲</span>@media prefers-color-scheme · Gmail, Outlook Classic<span class="line">30</span></div>
           <div class="problem"><span class="sev-warn">▲</span>padding · Outlook Classic<span class="line">104</span></div>
           <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
+          <div class="problem"><span class="sev-info">ⓘ</span>@media prefers-color-scheme · ignored by Gmail, Outlook Classic<span class="line">30</span></div>
         </div>
       </div>
       <div class="previews">

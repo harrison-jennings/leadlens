@@ -86,6 +86,23 @@ describe("one underline per element, not per client", () => {
     expect(safe[0].clients).not.toContain("Yahoo Mail");
   });
 
+  test("a client that skips progressive enhancement is named as ignoring it, not as partial", () => {
+    // `@media` is info everywhere it falls short: partial in Gmail (no
+    // height queries), skipped by Outlook Classic and Thunderbird, which keep
+    // the desktop layout. Only the first is partial support.
+    const html = "<html><head><style>p{color:red} @media (max-width:600px){p{color:blue}}</style></head>" +
+      "<body><p>Hi</p></body></html>";
+    const media = findings(html).find((f) => f.code === "@media")!;
+    expect(media.severity).toBe("info");
+    expect(media.message).toMatch(/ignored by [^;]*Outlook Classic/);
+    expect(media.message).toMatch(/ignored by [^;]*Thunderbird/);
+    expect(media.message).toMatch(/partial support in [^;]*Gmail/);
+    expect(media.message).not.toMatch(/partial support in [^;]*Outlook Classic/);
+    expect(media.message).not.toContain("not supported in");
+    expect(media.clients).toContain("outlook-windows-legacy");
+    expect(media.clients).toContain("gmail-web");
+  });
+
   test("every element that breaks a rule gets its own underline", () => {
     // Two <div>s, same rule: the engine reports one warning carrying both
     // positions, and both must be underlined.
