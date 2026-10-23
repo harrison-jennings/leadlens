@@ -35,6 +35,7 @@ Marketo templates also get their own structural checks, described in [Marketo Em
 - The **message** says what's wrong.
 - The **code** in the Problems panel is the rule: a CSS property such as `border-radius`, or a rule ID such as `img-missing-alt`. Use it in `leadlens.rules` and in suppression comments.
 - The **source** shows the category, and for compatibility findings, the client: `leadlens(outlook-windows-legacy)`.
+- A compatibility finding names its clients in up to three groups. *Not supported in* means the client drops the property and the email looks different there. *Partial support in* means it works with limits. *Ignored by* means the client skips it harmlessly and shows the email's default version, as with responsive `@media` queries and dark-mode styles. A finding with only the last two is information, not a warning.
 
 Findings point at the exact characters responsible, including inside linked stylesheets, composed components and Marketo substitutions. When the engine can't place a finding reliably, for example a rule about the whole document, it's reported at the top of the file instead.
 

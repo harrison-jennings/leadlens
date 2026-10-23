@@ -43,6 +43,7 @@ The first release of Leadlens: email preview and linting for Adobe Marketo Engag
 - Linked stylesheets are read only from inside the email's workspace folder, including after resolving symbolic links, and only up to the 2 MB email size limit in total. Previously an email could make Leadlens read any file it could reach, of any size.
 - Unrecognised client IDs, check categories and severities in `.leadlensrc` are underlined in the file and ignored. Previously a misspelt client ID hid every compatibility finding without saying why. Editor settings now offer the valid client IDs, and the underline cap per rule is at least 1.
 - The preview caps embedded local images at 20 MB in total, and keeps its cache of encoded images to a fixed size.
+- Compatibility findings say a client *ignores* a feature it skips harmlessly, such as `@media` queries and dark-mode styles in clients that keep the default layout. Previously these were described as partial support.
 - Local images now appear in the preview. They were found but failed to load, because the preview's sandboxed email frame can't fetch files from VS Code; Leadlens now embeds them directly.
 
 ### Known limitations
