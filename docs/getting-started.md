@@ -23,6 +23,8 @@ code --install-extension leadlens.vsix
 
 To update, install the newer download the same way. Every build has a higher version number than the one before it, so it replaces the installed version.
 
+Every earlier build stays on the [releases page](https://github.com/harrison-jennings/leadlens/releases). To go back to one, download its `leadlens.vsix` and install it the same way; from a terminal, add `--force`, because the installed version is newer.
+
 ## Your first preview
 
 1. Open an HTML email in VS Code.
