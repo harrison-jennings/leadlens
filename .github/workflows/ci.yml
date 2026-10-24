@@ -102,11 +102,12 @@ jobs:
           path: "*.vsix"
           if-no-files-found: error
 
-  # Every merge to main replaces one "Latest build" release, so the newest
-  # tested VSIX is always at the same address:
+  # Every merge to main publishes its own release, tagged with its version, so
+  # every build stays downloadable and a bad one can be rolled back. The newest
+  # is marked Latest, so the download address never changes:
   # releases/latest/download/leadlens.vsix
   release:
-    name: publish latest build
+    name: publish release
     needs: check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -134,13 +135,26 @@ jobs:
         with:
           subject-path: dist/leadlens-*.vsix
 
-      - name: Replace the latest-build release
+      # Each release carries the VSIX twice: as `leadlens.vsix`, the stable name
+      # that download links use, and under its versioned name.
+      - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           built=$(ls dist/leadlens-*.vsix)
           cp "$built" dist/leadlens.vsix
           version=$(basename "$built" .vsix | sed 's/^leadlens-//')
+          tag="v${version}"
+          # A re-run keeps its run number, and so its version. Leave a
+          # published release alone; replace a draft that an interrupted
+          # upload left behind.
+          if draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null); then
+            if [ "$draft" = "false" ]; then
+              echo "$tag is already published."
+              exit 0
+            fi
+            gh release delete "$tag" --yes
+          fi
           engine=$(node -p 'require("./package.json").dependencies["@emailens/engine"]')
           cat > notes.md <<EOF
           Built automatically from \`${GITHUB_SHA::7}\` after it passed CI on main.
@@ -156,10 +170,15 @@ jobs:
 
           Verify the download was built here: \`gh attestation verify leadlens.vsix --repo ${GITHUB_REPOSITORY}\`
           EOF
-          gh release delete latest-build --cleanup-tag --yes || true
           # The title is the bare version: the README's version badge shows it.
-          gh release create latest-build dist/leadlens.vsix "$built" \
+          # GitHub adds the pull requests merged since the previous release
+          # below these notes.
+          gh release create "$tag" dist/leadlens.vsix "$built" \
             --target "$GITHUB_SHA" \
             --title "${version}" \
             --notes-file notes.md \
+            --generate-notes \
             --latest
+          # The single rolling release that every build used to replace. A
+          # no-op once it's gone.
+          gh release delete latest-build --cleanup-tag --yes 2>/dev/null || true

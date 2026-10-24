@@ -2,20 +2,24 @@
 
 Leadlens is distributed as a VSIX package attached to GitHub releases. It isn't published to the Visual Studio Marketplace or any package registry.
 
-## Latest builds
+## Builds
 
 Every change merged to `main` produces a release automatically:
 
 1. CI type-checks, runs the unit and integration tests, builds and packages the extension.
 2. The packaged version takes `major.minor` from `package.json` and uses the CI run number as the patch, for example `1.0.57`. Each build is therefore newer than the last, and installs over it as an update.
 3. CI signs a provenance attestation for the package, recording the repository, commit and workflow that built it. Anyone can check a download against it (see [Privacy and security](docs/privacy-and-security.md#verifying-a-download)).
-4. The **Latest build** release is replaced with the new package as both `leadlens.vsix` (a stable name for download links) and `leadlens-<version>.vsix`.
+4. CI publishes a new release tagged with the version, for example `v1.0.57`, and marks it Latest. It carries the package as both `leadlens.vsix` (a stable name for download links) and `leadlens-<version>.vsix`. Its notes give the commit and engine version, followed by the pull requests merged since the previous release.
 
-The newest build is always available at `releases/latest/download/leadlens.vsix`.
+Earlier releases are kept, so every build stays downloadable. The newest is always at `releases/latest/download/leadlens.vsix`.
+
+## Rolling back
+
+If a build misbehaves, download `leadlens.vsix` from an earlier release on the releases page and install it over the top (from a terminal, add `--force`, because the installed version is newer). To fix it for everyone, revert the change on `main`: the next build becomes Latest.
 
 ## Engine updates
 
-Dependabot opens a pull request when `@emailens/engine` publishes a new version. Merging it once CI passes produces a new latest build with the updated compatibility data.
+Dependabot opens a pull request when `@emailens/engine` publishes a new version. Merging it once CI passes publishes a new build with the updated compatibility data.
 
 ## Security advisories
 
@@ -27,8 +31,8 @@ To mark a significant release:
 
 1. Update `major.minor` in `package.json`.
 2. Move the changelog's notes under a heading for the new version and date.
-3. Merge to `main`. The latest build carries the new version number.
-4. Optionally, create a tagged GitHub release for the milestone and attach the VSIX from that build.
+3. Merge to `main`. The build it produces carries the new version number.
+4. Optionally, edit that build's release notes to describe the milestone.
 
 ## Website
 
