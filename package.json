@@ -264,7 +264,7 @@
     "package": "bunx @vscode/vsce@4.0.0 package --no-dependencies"
   },
   "dependencies": {
-    "@emailens/engine": "0.16.0"
+    "@emailens/engine": "0.16.4"
   },
   "devDependencies": {
     "@types/bun": "^1.3.14",
