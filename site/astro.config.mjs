@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import { REPO_URL, SITE_URL, TAGLINE } from "./src/data/site.mjs";
+import { REPO_URL, SITE_URL, SOCIAL_IMAGE, TAGLINE } from "./src/data/site.mjs";
 
 export default defineConfig({
   site: SITE_URL,
@@ -23,8 +23,12 @@ export default defineConfig({
       head: [
         { tag: "link", attrs: { rel: "icon", type: "image/png", sizes: "32x32", href: "/generated/favicon-32.png" } },
         { tag: "link", attrs: { rel: "apple-touch-icon", href: "/generated/apple-touch-icon.png" } },
-        { tag: "meta", attrs: { property: "og:image", content: `${SITE_URL}/generated/og.png` } },
+        { tag: "meta", attrs: { property: "og:image", content: SOCIAL_IMAGE.url } },
+        { tag: "meta", attrs: { property: "og:image:width", content: String(SOCIAL_IMAGE.width) } },
+        { tag: "meta", attrs: { property: "og:image:height", content: String(SOCIAL_IMAGE.height) } },
+        { tag: "meta", attrs: { property: "og:image:alt", content: SOCIAL_IMAGE.alt } },
         { tag: "meta", attrs: { name: "twitter:card", content: "summary_large_image" } },
+        { tag: "meta", attrs: { name: "twitter:image:alt", content: SOCIAL_IMAGE.alt } },
         // Wide tables scroll sideways on phones; a scrolling region must be
         // reachable from the keyboard, so each docs table takes focus.
         {

@@ -9,6 +9,7 @@ import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "no
 import { dirname, join, posix, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { SITE_URL, breadcrumbs } from "../src/data/site.mjs";
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const repo = resolve(site, "..");
@@ -28,17 +29,31 @@ const DOCS = {
   "architecture.md": "architecture",
 };
 
+// What search engines show as each page's title. The page's own heading and
+// sidebar label stay the file's "# Title"; this only replaces <title>.
+const SEARCH_TITLES = {
+  "README.md": "Documentation: Marketo email preview and linting | Leadlens",
+  "getting-started.md": "Getting started: install and first preview | Leadlens",
+  "previews.md": "Preview email in 21 clients, light and dark | Leadlens",
+  "marketo.md": "Marketo Email Editor 2.0 templates in VS Code | Leadlens",
+  "linting.md": "Lint HTML email for Outlook, Gmail and more | Leadlens",
+  "configuration.md": "Settings and team configuration | Leadlens",
+  "privacy-and-security.md": "Privacy and security: everything runs locally | Leadlens",
+  "troubleshooting.md": "Troubleshooting previews, findings and MJML | Leadlens",
+  "architecture.md": "Architecture for contributors | Leadlens",
+};
+
 // What search engines and link previews show for each page.
 const DESCRIPTIONS = {
-  "README.md": "Documentation for Leadlens, email preview and linting for Adobe Marketo Engage in VS Code.",
-  "getting-started.md": "Install Leadlens, open your first email preview and read your first findings.",
-  "previews.md": "Preview email in 21 client simulations, side by side, in light and dark mode, at any viewport.",
-  "marketo.md": "How Leadlens understands Marketo Email Editor 2.0 templates, variables, tokens and modules.",
-  "linting.md": "What Leadlens checks, how findings appear, quick fixes, scores and silencing findings.",
-  "configuration.md": "Every Leadlens setting, team configuration files and how they combine.",
+  "README.md": "Documentation for Leadlens, the free VS Code extension for Adobe Marketo Engage email: previews, linting, Email Editor 2.0 templates and settings.",
+  "getting-started.md": "Install Leadlens from the Visual Studio Marketplace, open your first email preview and read your first findings, quick fixes and client scores.",
+  "previews.md": "Preview HTML email in 21 email client simulations, side by side, in light and dark mode, at any viewport width, with local images and saved client sets.",
+  "marketo.md": "How Leadlens understands Marketo Email Editor 2.0 templates: variables, tokens, modules and editable regions, with local preview values.",
+  "linting.md": "What Leadlens checks in HTML email, how findings appear as you type, quick fixes, per-client scores, and how to silence a finding on purpose.",
+  "configuration.md": "Every Leadlens setting, how to share them with your team in .leadlensrc or package.json, and which value wins when editor and project settings differ.",
   "privacy-and-security.md": "What Leadlens does and doesn't access: local analysis, sandboxed previews and blocked remote images.",
-  "troubleshooting.md": "Answers to common Leadlens problems.",
-  "architecture.md": "For contributors: how the Leadlens extension is built.",
+  "troubleshooting.md": "Fixes for common Leadlens problems: no findings, too many findings, Marketo detection, preview values, missing images and MJML.",
+  "architecture.md": "For contributors: how the Leadlens VS Code extension is built on the Emailens engine, from Marketo preparation to diagnostics and previews.",
 };
 
 // Repository files the docs link to that aren't site pages.
@@ -86,10 +101,20 @@ for (const [file, slug] of Object.entries(DOCS)) {
   const { title, body } = splitTitle(source, `docs/${file}`);
   const description = DESCRIPTIONS[file];
   if (!description) throw new Error(`docs/${file} needs an entry in DESCRIPTIONS.`);
+  const searchTitle = SEARCH_TITLES[file];
+  if (!searchTitle) throw new Error(`docs/${file} needs an entry in SEARCH_TITLES.`);
+  // Leadlens › Docs › this page, for search results.
+  const trail = [["Leadlens", `${SITE_URL}/`], ["Docs", `${SITE_URL}/docs/`]];
+  if (slug) trail.push([title, `${SITE_URL}/docs/${slug}/`]);
+  const head = [
+    { tag: "title", content: searchTitle },
+    { tag: "script", attrs: { type: "application/ld+json" }, content: JSON.stringify(breadcrumbs(trail)) },
+  ];
   const frontmatter = [
     "---",
     `title: ${yaml(slug ? title : "Overview")}`,
     `description: ${yaml(description)}`,
+    `head: ${yaml(head)}`,
     "---",
     "",
   ].join("\n");

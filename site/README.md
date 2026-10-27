@@ -22,7 +22,7 @@ The documentation and changelog are not edited here. `scripts/sync-content.mjs` 
 
 Those copies are ignored by Git. Edit the originals, and the site and the repository stay in step. The sync fails the build if a docs page links to something the site can't publish; add the destination to the script when that happens.
 
-A new docs page needs an entry in the script's `DOCS` and `DESCRIPTIONS` maps, and in the sidebar in `astro.config.mjs`.
+A new docs page needs an entry in the script's `DOCS`, `SEARCH_TITLES` and `DESCRIPTIONS` maps, and in the sidebar in `astro.config.mjs`. The script also gives each docs page breadcrumb structured data (Leadlens › Docs › page) for search results.
 
 ## Layout
 

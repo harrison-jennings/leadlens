@@ -3,10 +3,16 @@ import Marketing from "../layouts/Marketing.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { Content } from "../generated/changelog.md";
-import { MARKETPLACE_URL, RELEASES_URL } from "../data/site.mjs";
+import { MARKETPLACE_URL, RELEASES_URL, SITE_URL, breadcrumbs } from "../data/site.mjs";
+
+const trail = breadcrumbs([["Leadlens", `${SITE_URL}/`], ["Changelog", `${SITE_URL}/changelog/`]]);
 ---
 
-<Marketing title="Changelog · Leadlens" description="What's new in Leadlens, release by release.">
+<Marketing
+  title="Changelog · Leadlens"
+  description="What's new in each Leadlens release: features, fixes and Emailens engine updates for the VS Code extension for Adobe Marketo Engage."
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(trail)} />
   <div class="page">
     <SiteHeader tone="light" current="changelog" />
     <main class="page-main" id="main">
