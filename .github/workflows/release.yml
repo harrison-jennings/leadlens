@@ -1,0 +1,175 @@
+name: Release
+
+# A change on main that alters the installed extension publishes a new build:
+# the code, the manifest and lockfile (including engine updates), or the
+# README, changelog, licence and icons that make up its Marketplace page.
+# Website, documentation and repository changes never publish an update.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "!src/__tests__/**"
+      - "!src/integration/**"
+      - "package.json"
+      - "bun.lock"
+      - "build.mjs"
+      - "tsconfig.json"
+      - ".vscodeignore"
+      - "README.md"
+      - "CHANGELOG.md"
+      - "LICENSE"
+      - "docs/icon.png"
+      - "media/**"
+  # Publishes main as it stands, for example once the Marketplace sign-in is
+  # set up, or after a failed run.
+  workflow_dispatch:
+
+permissions: {}
+
+# Publishing runs queue rather than overlap, and one is never cancelled
+# halfway. If several wait, only the newest runs.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  check:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  # Every build is published as its own release, tagged with its version, so
+  # every build stays downloadable and a bad one can be rolled back. The newest
+  # is marked Latest, so the download address never changes:
+  # releases/latest/download/leadlens.vsix
+  release:
+    name: publish GitHub release
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Signing the build's provenance (below).
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: vsix
+          path: dist
+
+      # A signed record that this VSIX was built here, from this commit, by
+      # this workflow. Anyone can check a download against it with
+      # `gh attestation verify`. GitHub only offers attestations to private
+      # repositories on Enterprise plans, so they are made once public.
+      - name: Attest the build's provenance
+        if: ${{ !github.event.repository.private }}
+        uses: actions/attest@v4
+        with:
+          subject-path: dist/leadlens-*.vsix
+
+      # Each release carries the VSIX twice: as `leadlens.vsix`, the stable name
+      # that download links use, and under its versioned name.
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          built=$(ls dist/leadlens-*.vsix)
+          cp "$built" dist/leadlens.vsix
+          version=$(basename "$built" .vsix | sed 's/^leadlens-//')
+          tag="v${version}"
+          # A re-run keeps its run number, and so its version. Leave a
+          # published release alone; replace a draft that an interrupted
+          # upload left behind.
+          if draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null); then
+            if [ "$draft" = "false" ]; then
+              echo "$tag is already published."
+              exit 0
+            fi
+            gh release delete "$tag" --yes
+          fi
+          engine=$(node -p 'require("./package.json").dependencies["@emailens/engine"]')
+          cat > notes.md <<EOF
+          Built automatically from \`${GITHUB_SHA::7}\` after it passed CI on main.
+
+          - Leadlens ${version}
+          - @emailens/engine ${engine}
+
+          Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=leadlens.leadlens) or [Open VSX](https://open-vsx.org/extension/leadlens/leadlens), where updates install automatically.
+
+          To install this build from its file: download \`leadlens.vsix\`, then in VS Code open the Extensions view, choose **⋯ → Install from VSIX…**, and reload the window. Or run:
+
+          \`\`\`sh
+          code --install-extension leadlens.vsix
+          \`\`\`
+
+          Verify the download was built here: \`gh attestation verify leadlens.vsix --repo ${GITHUB_REPOSITORY}\`
+          EOF
+          # The title is the bare version. GitHub adds the pull requests merged
+          # since the previous release below these notes.
+          gh release create "$tag" dist/leadlens.vsix "$built" \
+            --target "$GITHUB_SHA" \
+            --title "${version}" \
+            --notes-file notes.md \
+            --generate-notes \
+            --latest
+
+  # The same VSIX the release carries, so the attestation covers it too. Both
+  # registries refuse a version they already have; --skip-duplicate makes a
+  # re-run a no-op instead of a failure. The two are separate jobs, so one
+  # registry's outage never holds up the other.
+  marketplace:
+    name: publish to the Visual Studio Marketplace
+    needs: release
+    # Off until the Azure sign-in is set up; RELEASING.md describes it.
+    if: vars.AZURE_CLIENT_ID != ''
+    runs-on: ubuntu-latest
+    # The Azure identity only trusts jobs in this environment.
+    environment: marketplace
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: vsix
+          path: dist
+
+      # Signs in as the publisher's Azure identity with a short-lived token
+      # GitHub issues to this job, so there is no stored password to expire.
+      # Azure DevOps retires the personal access tokens the Marketplace used
+      # to take on 1 December 2026. Third-party, so pinned to a reviewed
+      # commit.
+      - uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Publish
+        run: npx --yes @vscode/vsce@4.0.0 publish --packagePath dist/leadlens-*.vsix --azure-credential --skip-duplicate
+
+  open-vsx:
+    name: publish to Open VSX
+    needs: release
+    runs-on: ubuntu-latest
+    environment: marketplace
+    permissions: {}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: vsix
+          path: dist
+
+      # ovsx reads the token from OVSX_PAT.
+      - name: Publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::notice::Open VSX isn't set up yet (no OVSX_PAT secret), so this build wasn't published there."
+            exit 0
+          fi
+          npx --yes ovsx@1.3.0 publish dist/leadlens-*.vsix --skip-duplicate

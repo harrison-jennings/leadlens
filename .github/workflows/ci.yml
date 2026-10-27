@@ -1,19 +1,20 @@
 name: CI
 
-# Every pull request runs the checks, because main requires them to pass. A
-# merge that only changes the website doesn't publish a new extension build.
+# Every pull request runs the checks, because main requires them to pass. The
+# Release workflow runs the same checks before it publishes a build.
 on:
-  push:
-    branches: [main]
-    paths-ignore: ["site/**", ".github/workflows/site.yml"]
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
 
+# A newer push to a pull request replaces its running checks. A release's
+# checks always finish: they come from the Release workflow, whose own
+# concurrency group queues publishing runs.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
@@ -61,8 +62,9 @@ jobs:
       - name: Integration tests (a real VS Code)
         run: xvfb-run -a bun run test:integration
 
-      # package.json holds major.minor; the patch is this workflow's run
-      # number. Every build therefore has a higher version than the last, so
+      # package.json holds major.minor; the patch is the run number. In a
+      # release that is the Release workflow's, which started counting again
+      # at 1.1. Every build therefore has a higher version than the last, so
       # VS Code installs a newer download as an update instead of declining
       # it as already installed. Only the packaged copy changes.
       - name: Stamp the build number into the version
@@ -101,84 +103,3 @@ jobs:
           name: vsix
           path: "*.vsix"
           if-no-files-found: error
-
-  # Every merge to main publishes its own release, tagged with its version, so
-  # every build stays downloadable and a bad one can be rolled back. The newest
-  # is marked Latest, so the download address never changes:
-  # releases/latest/download/leadlens.vsix
-  release:
-    name: publish release
-    needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      # Signing the build's provenance (below).
-      id-token: write
-      attestations: write
-      artifact-metadata: write
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: vsix
-          path: dist
-
-      # A signed record that this VSIX was built here, from this commit, by
-      # this workflow. Anyone can check a download against it with
-      # `gh attestation verify`. GitHub only offers attestations to private
-      # repositories on Enterprise plans, so they are made once public.
-      - name: Attest the build's provenance
-        if: ${{ !github.event.repository.private }}
-        uses: actions/attest@v4
-        with:
-          subject-path: dist/leadlens-*.vsix
-
-      # Each release carries the VSIX twice: as `leadlens.vsix`, the stable name
-      # that download links use, and under its versioned name.
-      - name: Publish the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          built=$(ls dist/leadlens-*.vsix)
-          cp "$built" dist/leadlens.vsix
-          version=$(basename "$built" .vsix | sed 's/^leadlens-//')
-          tag="v${version}"
-          # A re-run keeps its run number, and so its version. Leave a
-          # published release alone; replace a draft that an interrupted
-          # upload left behind.
-          if draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null); then
-            if [ "$draft" = "false" ]; then
-              echo "$tag is already published."
-              exit 0
-            fi
-            gh release delete "$tag" --yes
-          fi
-          engine=$(node -p 'require("./package.json").dependencies["@emailens/engine"]')
-          cat > notes.md <<EOF
-          Built automatically from \`${GITHUB_SHA::7}\` after it passed CI on main.
-
-          - Leadlens ${version}
-          - @emailens/engine ${engine}
-
-          Install or update: download \`leadlens.vsix\`, then in VS Code open the Extensions view, choose **⋯ → Install from VSIX…**, and reload the window. Or run:
-
-          \`\`\`sh
-          code --install-extension leadlens.vsix
-          \`\`\`
-
-          Verify the download was built here: \`gh attestation verify leadlens.vsix --repo ${GITHUB_REPOSITORY}\`
-          EOF
-          # The title is the bare version: the README's version badge shows it.
-          # GitHub adds the pull requests merged since the previous release
-          # below these notes.
-          gh release create "$tag" dist/leadlens.vsix "$built" \
-            --target "$GITHUB_SHA" \
-            --title "${version}" \
-            --notes-file notes.md \
-            --generate-notes \
-            --latest
-          # The single rolling release that every build used to replace. A
-          # no-op once it's gone.
-          gh release delete latest-build --cleanup-tag --yes 2>/dev/null || true

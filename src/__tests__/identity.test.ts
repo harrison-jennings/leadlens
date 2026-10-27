@@ -9,6 +9,7 @@ interface Manifest {
   repository?: unknown;
   homepage?: string;
   bugs?: unknown;
+  qna?: unknown;
   license: string;
   icon: string;
   contributes: {
@@ -59,13 +60,18 @@ describe("Leadlens extension identity", () => {
     expect(manifest.homepage).toBe(`https://${SITE_HOST}`);
   });
 
-  // The VS Code badge is static text, so it has to follow `engines.vscode`.
+  // The README states the requirement in prose, so it has to follow
+  // `engines.vscode`.
   test("states the VS Code requirement the manifest declares", () => {
     const minimum = manifest.engines.vscode.match(/^\^(\d+\.\d+)\.0$/)?.[1];
     const readme = readFileSync(new URL("../../README.md", import.meta.url), "utf8");
     expect(minimum).toBeDefined();
-    expect(readme).toContain(`/badge/VS%20Code-${minimum}%2B-`);
     expect(readme).toContain(`needs VS Code ${minimum} or later`);
+  });
+
+  // Marketplace listing settings that change how the extension page behaves.
+  test("sends questions to GitHub issues rather than a Marketplace Q&A tab", () => {
+    expect(manifest.qna).toBe(false);
   });
 
   test("contributes only Leadlens commands and settings", () => {

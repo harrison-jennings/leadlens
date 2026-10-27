@@ -4,7 +4,7 @@
 # how it rewrites an email, which checks apply — and Emailens updates it often.
 # Leadlens pins it exactly and bundles it into the VSIX, so a new release only
 # reaches users through a PR here: CI runs the full suite against it, and a
-# merge to main publishes a new build (see ci.yml).
+# merge to main publishes a new build (see release.yml).
 #
 # Version updates are limited to the engine. The build tools are not worth a
 # stream of PRs. Dependabot security PRs are enabled in the repository settings,

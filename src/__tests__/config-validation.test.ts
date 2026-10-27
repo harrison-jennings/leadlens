@@ -60,6 +60,13 @@ describe("the settings VS Code validates", () => {
     expect(properties["leadlens.preview.defaultClient"].enum).toEqual(IDS);
   });
 
+  // The settings editor shows these names beside each ID.
+  test("name each client as the engine does", () => {
+    const names = EMAIL_CLIENTS.map((client) => client.name);
+    expect(properties["leadlens.clients"].items.enumDescriptions).toEqual(names);
+    expect(properties["leadlens.preview.defaultClient"].enumDescriptions).toEqual(names);
+  });
+
   test("offer only check categories the engine can skip", () => {
     for (const category of properties["leadlens.skip"].items.enum) expect(SKIP_CATEGORIES).toContain(category);
   });

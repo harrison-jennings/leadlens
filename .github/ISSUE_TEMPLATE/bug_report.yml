@@ -45,3 +45,11 @@ body:
       description: Leadlens version (Extensions view) and VS Code version (Help → About).
     validations:
       required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Installed from
+      options:
+        - Visual Studio Marketplace
+        - Open VSX (Cursor, VSCodium, Windsurf or another editor)
+        - A downloaded VSIX file

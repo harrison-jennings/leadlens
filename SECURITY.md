@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes are made in the latest build. Install the newest release to receive them.
+Security fixes are made in the latest build. Installations from the Visual Studio Marketplace or Open VSX update to it automatically; if you installed a downloaded VSIX, install the newest release.
 
 ## Reporting a vulnerability
 
