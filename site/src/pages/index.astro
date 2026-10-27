@@ -13,6 +13,15 @@ const half = Math.ceil(CLIENTS.length / 2);
 const rows = [CLIENTS.slice(0, half), CLIENTS.slice(half)];
 const COPIES = 8;
 
+// The headline's spin through client names (src/scripts/roll-clients.ts).
+// Only names no wider than "every inbox" fit its space (the script drops any
+// that don't), which rules out most of the long ones such as "Outlook
+// Classic". The big platforms come last, where the spin slows enough to read.
+const SPIN = [
+  "HEY Mail", "Proton Mail", "Fastmail", "AOL Mail", "Gmail iOS",
+  "Yahoo Mail", "Outlook", "Apple Mail", "Gmail",
+];
+
 const marketoPoints = [
   "Every variable type, with module-scoped preview values",
   "Token fallbacks applied; runtime-only tokens clearly marked",
@@ -124,7 +133,8 @@ const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" strok
     <div class="container">
       <div class="hero-copy">
         <span class="hero-chip">VS Code extension for Adobe Marketo Engage</span>
-        <h1>Preview every inbox before you&nbsp;send.</h1>
+        <h1>Preview <span class="hero-cycle" data-words={JSON.stringify(SPIN)}><span class="hero-cycle-word">every inbox</span></span><br class="hero-break" /> before you&nbsp;send.</h1>
+        <script>import "../scripts/roll-clients.ts";</script>
         <p class="hero-lede">Leadlens shows your email in 21 email clients as you type, flags what will break, and understands Marketo Email Editor 2.0 variables, modules and tokens.</p>
         <div class="hero-actions">
           <a class="button button-primary button-download" href={MARKETPLACE_URL}>
