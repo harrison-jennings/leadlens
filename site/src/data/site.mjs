@@ -13,6 +13,24 @@ export const TAGLINE = "Email preview and linting for Adobe Marketo Engage, insi
 export const TRADEMARK_NOTICE =
   "Adobe and Marketo are either registered trademarks or trademarks of Adobe in the United States and/or other countries. Leadlens is not authorized, endorsed or sponsored by Adobe.";
 
+// The card link previews show: docs/brand/leadlens-social.png.
+export const SOCIAL_IMAGE = {
+  url: `${SITE_URL}/generated/og.png`,
+  width: 1280,
+  height: 640,
+  alt: "Leadlens: email preview and linting for Adobe Marketo Engage, inside VS Code",
+};
+
+// Breadcrumb structured data for search results: [name, address] pairs from
+// the home page down to the page itself.
+export function breadcrumbs(trail) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map(([name, item], index) => ({ "@type": "ListItem", position: index + 1, name, item })),
+  };
+}
+
 // The engine's client profiles. Keep in step with docs/previews.md.
 export const CLIENTS = [
   "Gmail", "Gmail Android", "Gmail iOS",

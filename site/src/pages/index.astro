@@ -4,7 +4,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import ProductShot from "../components/ProductShot.astro";
 import extension from "../generated/extension.json";
-import { CLIENTS, DOWNLOAD_URL, MARKETPLACE_URL, OPEN_VSX_URL, PORTFOLIO_URL, SITE_URL, TAGLINE } from "../data/site.mjs";
+import { CLIENTS, DOWNLOAD_URL, MARKETPLACE_URL, OPEN_VSX_URL, PORTFOLIO_URL, REPO_URL, SITE_URL, SOCIAL_IMAGE, TAGLINE } from "../data/site.mjs";
 
 // Two rows that scroll in opposite directions by half their length. Each half
 // holds the row four times, so it is wider than any screen (5,000 px or more)
@@ -88,8 +88,16 @@ const structuredData = [
     installUrl: MARKETPLACE_URL,
     downloadUrl: DOWNLOAD_URL,
     url: SITE_URL,
-    image: `${SITE_URL}/generated/og.png`,
+    image: SOCIAL_IMAGE.url,
+    sameAs: [MARKETPLACE_URL, OPEN_VSX_URL, REPO_URL],
     author: { "@type": "Person", name: "Harrison Jennings", url: PORTFOLIO_URL },
+  },
+  // Lets search results name the site "Leadlens" rather than its address.
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Leadlens",
+    url: `${SITE_URL}/`,
   },
   {
     "@context": "https://schema.org",
@@ -105,7 +113,10 @@ const structuredData = [
 const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B6F64" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"></path></svg>`;
 ---
 
-<Marketing title="Leadlens: email preview and linting for Adobe Marketo Engage">
+<Marketing
+  title="Leadlens: email preview and linting for Adobe Marketo Engage"
+  description="A free VS Code extension for Adobe Marketo Engage: preview HTML email in 21 email clients as you type, and catch what breaks in Outlook and Gmail."
+>
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   <SiteHeader tone="dark" />
   <main id="main">
@@ -178,7 +189,7 @@ const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" strok
       <div class="container split">
         <div class="split-copy">
           <span class="eyebrow">Marketo Email Editor 2.0</span>
-          <h2 class="section-title">Made for Marketo templates, not generic HTML.</h2>
+          <h2 class="section-title">Made for Marketo templates, not just generic HTML.</h2>
           <p class="lede">Leadlens reads your template the way Marketo does, so you see real content instead of <code>{"${variable}"}</code> placeholders, and no false alarms about valid tokens.</p>
           <ul class="checklist">
             {marketoPoints.map((point) => <li><Fragment set:html={check} /><span>{point}</span></li>)}

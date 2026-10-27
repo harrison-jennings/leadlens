@@ -2,9 +2,16 @@
 import Marketing from "../layouts/Marketing.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import { SITE_URL, breadcrumbs } from "../data/site.mjs";
+
+const trail = breadcrumbs([["Leadlens", `${SITE_URL}/`], ["Privacy", `${SITE_URL}/privacy/`]]);
 ---
 
-<Marketing title="Privacy · Leadlens" description="What this website and the Leadlens extension collect.">
+<Marketing
+  title="Privacy · Leadlens"
+  description="What the Leadlens website and VS Code extension collect: cookie-free page counts on the website, and nothing at all from the extension."
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(trail)} />
   <div class="page">
     <SiteHeader tone="light" />
     <main class="page-main" id="main">
@@ -20,7 +27,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 
           <h2>This website</h2>
           <p>The site counts visits with Vercel Web Analytics, which records page views and general information such as the referring site, country and device type. It doesn't use cookies, doesn't build a profile of you across sites, and doesn't collect personal information.</p>
-          <p>The site is hosted on Vercel, which keeps standard server logs to run and protect the service. Fonts and images are served from this site; nothing loads from third-party services. Downloads come from GitHub, under GitHub's own privacy statement.</p>
+          <p>The site is hosted on Vercel, which keeps standard server logs to run and protect the service. Fonts and images are served from this site; nothing loads from third-party services. Installs come from the Visual Studio Marketplace, Open VSX or GitHub, each under its own privacy statement.</p>
 
           <h2>Contact</h2>
           <p>Questions about privacy can be raised as an issue on the project's <a href="https://github.com/harrison-jennings/leadlens/issues">GitHub repository</a>.</p>
