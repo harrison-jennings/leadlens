@@ -55,7 +55,7 @@ The integration suite opens a real VS Code window, so it needs a display. CI run
 
 ## Website
 
-The website in `site/` publishes the documentation in `docs/` and the changelog, so a change to either appears on the site with no extra step. See [site/README.md](site/README.md) to run it locally. The Site workflow builds every change to it. The extension's checks run on every pull request too, but merging a change that only touches `site/` doesn't publish a new extension build.
+The website in `site/` publishes the documentation in `docs/` and the changelog, so a change to either appears on the site with no extra step. See [site/README.md](site/README.md) to run it locally. The Site workflow builds every change to it. The extension's checks run on every pull request too, but only a change to something that ships in the extension publishes a new build: its code, `package.json` and the lockfile, the README, changelog, licence or icons. Changes to the website, the documentation in `docs/` or the repository's own files don't. The Release workflow lists the exact paths.
 
 ## Engine updates
 

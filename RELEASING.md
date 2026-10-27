@@ -1,25 +1,43 @@
 # Releasing
 
-Leadlens is distributed as a VSIX package attached to GitHub releases. It isn't published to the Visual Studio Marketplace or any package registry.
+Leadlens is published to the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=leadlens.leadlens) and [Open VSX](https://open-vsx.org/extension/leadlens/leadlens), and every build is also attached to a GitHub release as a VSIX package. It isn't published to npm or any other registry.
 
 ## Builds
 
-Every change merged to `main` produces a release automatically:
+When a change to something that ships in the extension is merged to `main`, the **Release** workflow publishes a new build:
 
-1. CI type-checks, runs the unit and integration tests, builds and packages the extension.
-2. The packaged version takes `major.minor` from `package.json` and uses the CI run number as the patch, for example `1.0.57`. Each build is therefore newer than the last, and installs over it as an update.
-3. CI signs a provenance attestation for the package, recording the repository, commit and workflow that built it. Anyone can check a download against it (see [Privacy and security](docs/privacy-and-security.md#verifying-a-download)).
-4. CI publishes a new release tagged with the version, for example `v1.0.57`, and marks it Latest. It carries the package as both `leadlens.vsix` (a stable name for download links) and `leadlens-<version>.vsix`. Its notes give the commit and engine version, followed by the pull requests merged since the previous release.
+1. It runs the same checks as a pull request: type checking, the unit and integration tests, the build and the package.
+2. The packaged version takes `major.minor` from `package.json` and uses the Release workflow's run number as the patch, for example `1.1.12`. Each build is therefore newer than the last, and installs over it as an update.
+3. It signs a provenance attestation for the package, recording the repository, commit and workflow that built it. Anyone can check a download against it (see [Privacy and security](docs/privacy-and-security.md#verifying-a-download)).
+4. It publishes a GitHub release tagged with the version, for example `v1.1.12`, and marks it Latest. The release carries the package as both `leadlens.vsix` (a stable name for download links) and `leadlens-<version>.vsix`. Its notes give the commit and engine version, followed by the pull requests merged since the previous release.
+5. It publishes the same package to the Visual Studio Marketplace and Open VSX, in separate jobs. VS Code installs it for everyone as an automatic update.
 
-Earlier releases are kept, so every build stays downloadable. The newest is always at `releases/latest/download/leadlens.vsix`.
+What ships, and so publishes a build: the extension's code in `src/` (not its tests), `package.json`, `bun.lock`, `build.mjs`, `tsconfig.json`, `.vscodeignore`, `README.md`, `CHANGELOG.md`, `LICENSE`, `docs/icon.png` and `media/`. The README and changelog are the extension's Details and Changelog pages, so changing them publishes a build too. Changes to the website, the documentation in `docs/`, the workflows or other repository files never publish one.
+
+To publish `main` as it stands, for example after setting up a registry, open the Actions tab, choose **Release** and **Run workflow**.
+
+Earlier GitHub releases are kept, so every build stays downloadable. The newest is always at `releases/latest/download/leadlens.vsix`.
+
+## Registry sign-in
+
+Both registries are signed in to from the `marketplace` environment in the repository's settings.
+
+- **Visual Studio Marketplace**: the publisher is `leadlens`. The publishing job signs in as an Azure managed identity, using a short-lived token that GitHub issues to the job, so there is no password or token to renew. The identity is a Contributor on the publisher, and trusts only jobs in this repository's `marketplace` environment. Its IDs are the repository variables `AZURE_CLIENT_ID` and `AZURE_TENANT_ID`; it needs no Azure subscription or role. Each run prints the identity's Marketplace ID, which is how it was added to the publisher. Until `AZURE_CLIENT_ID` is set, the job is skipped.
+- **Open VSX**: the namespace is `leadlens`. The publishing token is the `OVSX_PAT` secret of the `marketplace` environment. Without it, the job publishes nothing and leaves a notice on the run.
+
+A failed publish leaves the GitHub release in place. Re-run the failed job from the Actions tab; a version a registry already has is skipped, so re-running is always safe.
 
 ## Rolling back
 
-If a build misbehaves, download `leadlens.vsix` from an earlier release on the releases page and install it over the top (from a terminal, add `--force`, because the installed version is newer). To fix it for everyone, revert the change on `main`: the next build becomes Latest.
+Neither registry can return users to an earlier version: VS Code only updates to a newer one. To fix a bad build for everyone, revert the change on `main`; the next build has a higher version and replaces it.
+
+To go back on one computer, download `leadlens.vsix` from an earlier release on the releases page and install it over the top (from a terminal, add `--force`, because the installed version is newer). Then turn off **Auto Update** for Leadlens in the Extensions view, or VS Code will update it again.
+
+In an emergency, the extension can be unpublished from the Marketplace's publisher management page. It disappears from search and can't be installed, but existing installations keep working, and publishing it again restores it.
 
 ## Engine updates
 
-Dependabot opens a pull request when `@emailens/engine` publishes a new version. Merging it once CI passes publishes a new build with the updated compatibility data.
+Dependabot opens a pull request when `@emailens/engine` publishes a new version. Merging it once CI passes publishes a new build with the updated compatibility data, which reaches everyone as an automatic update.
 
 ## Security advisories
 
@@ -36,10 +54,10 @@ To mark a significant release:
 
 ## Website
 
-The website deploys from `site/` on Vercel, separately from extension builds. Documentation and changelog changes reach it automatically, because the site is built from `docs/` and `CHANGELOG.md`.
+The website deploys from `site/` on Vercel, separately from extension builds; a website change never publishes an update. Documentation and changelog changes reach it automatically, because the site is built from `docs/` and `CHANGELOG.md`.
 
 ## Before releasing
 
-- CI is green on `main`.
+- CI is green on the pull request.
 - The VSIX contains only `out/extension.js`, the icon, the preview tab icons, `README.md`, `CHANGELOG.md`, `LICENSE` and `THIRD_PARTY_NOTICES.md`. CI checks the size and the required files.
 - User-visible changes are in the changelog and the documentation.

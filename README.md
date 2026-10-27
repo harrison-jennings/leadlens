@@ -2,10 +2,9 @@
 
 **Email preview and linting for Adobe Marketo Engage, inside VS Code.**
 
-[![Version](https://img.shields.io/github/v/release/harrison-jennings/leadlens?display_name=release&label=version&labelColor=121A2B&color=0E8F80)](https://github.com/harrison-jennings/leadlens/releases/latest)
+[![VS Code Marketplace](https://img.shields.io/badge/vs%20code%20marketplace-install-0E8F80?labelColor=121A2B)](https://marketplace.visualstudio.com/items?itemName=leadlens.leadlens)
+[![Open VSX](https://img.shields.io/open-vsx/v/leadlens/leadlens?label=open%20vsx&labelColor=121A2B&color=0E8F80)](https://open-vsx.org/extension/leadlens/leadlens)
 [![Emailens engine](https://img.shields.io/github/package-json/dependency-version/harrison-jennings/leadlens/@emailens/engine?label=emailens%20engine&labelColor=121A2B&color=0E8F80)](https://github.com/emailens/engine)
-[![VS Code 1.90 or later](https://img.shields.io/badge/VS%20Code-1.90%2B-0E8F80?labelColor=121A2B)](https://code.visualstudio.com)
-[![MIT licence](https://img.shields.io/badge/licence-MIT-0E8F80?labelColor=121A2B)](https://github.com/harrison-jennings/leadlens/blob/main/LICENSE)
 [![Website](https://img.shields.io/badge/website-leadlens.harrisonjennings.au-0E8F80?labelColor=121A2B)](https://leadlens.harrisonjennings.au)
 
 ![Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic and its explanation, beside the email previewed in Gmail, Outlook Classic with the button reduced to highlighted text, and Apple Mail iOS in dark mode](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-product.png)
@@ -17,15 +16,17 @@ Leadlens shows how your email will look across 21 email clients as you type, fla
 - **Linting where you write**: problems appear in the editor, with explanations on hover and one-click fixes.
 - **Private by default**: everything runs locally, and remote images stay off until you allow them.
 
+![A Marketo template in VS Code with the Leadlens preview beside it. Typing border-radius into the call-to-action button rounds it in the Gmail preview, and Leadlens underlines it at once. The hover explains that Outlook Classic drops border-radius; switching the preview to Outlook Classic shows the button reduced to highlighted text, and the Quick Fix menu offers a VML fix for rounded buttons in Outlook](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-demo.gif)
+
 ## Install
 
-Leadlens is distributed as a VSIX package from GitHub. It needs VS Code 1.90 or later.
+Install Leadlens from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=leadlens.leadlens): search for **Leadlens** in the Extensions view, or run `ext install leadlens.leadlens` from Quick Open (Ctrl+P, or Cmd+P on a Mac). It needs VS Code 1.90 or later, and updates install automatically.
 
-1. Download [leadlens.vsix](https://github.com/harrison-jennings/leadlens/releases/latest/download/leadlens.vsix) from the latest release.
-2. In VS Code, open the Extensions view, choose **⋯ → Install from VSIX…** and select the file.
-3. Reload the window when prompted.
+In Cursor, VSCodium, Windsurf and other editors that use [Open VSX](https://open-vsx.org/extension/leadlens/leadlens), search for **Leadlens** in the same way.
 
-To update, install a newer download the same way. The [documentation](https://leadlens.harrisonjennings.au/docs/) covers every feature in detail.
+To install from a file instead, download [leadlens.vsix](https://github.com/harrison-jennings/leadlens/releases/latest/download/leadlens.vsix) and choose **⋯ → Install from VSIX…** in the Extensions view. Every build is kept on the [releases page](https://github.com/harrison-jennings/leadlens/releases).
+
+The [documentation](https://leadlens.harrisonjennings.au/docs/) covers every feature in detail.
 
 ## Getting started
 

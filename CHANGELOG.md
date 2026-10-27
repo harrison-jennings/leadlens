@@ -1,5 +1,13 @@
 # Changelog
 
+Each build's exact changes, including Emailens engine updates, are listed in its [GitHub release](https://github.com/harrison-jennings/leadlens/releases).
+
+## 1.1 — October 2026
+
+- Leadlens is available from the Visual Studio Marketplace and Open VSX, and updates automatically. Installing a downloaded VSIX still works.
+- The settings editor names each email client beside its ID, and describes both `leadlens.run` options.
+- Copy Fix Snippet no longer appears among the extension's commands. It was only ever available as a quick fix, and still is.
+
 ## 1.0 — October 2026
 
 The first release of Leadlens: email preview and linting for Adobe Marketo Engage.

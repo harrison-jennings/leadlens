@@ -1,8 +1,8 @@
 {
   "name": "leadlens",
   "displayName": "Leadlens — Email Preview & Linting for Adobe Marketo Engage",
-  "description": "Build and inspect Adobe Marketo Engage Email Editor 2.0 templates and email HTML with local multi-client previews and source-linked linting.",
-  "version": "1.0.0",
+  "description": "Build and inspect Adobe® Marketo® Engage Email Editor 2.0 templates and email HTML with local multi-client previews and source-linked linting.",
+  "version": "1.1.0",
   "private": true,
   "publisher": "leadlens",
   "license": "MIT",
@@ -14,6 +14,7 @@
   "bugs": {
     "url": "https://github.com/harrison-jennings/leadlens/issues"
   },
+  "qna": false,
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
@@ -22,16 +23,25 @@
   },
   "categories": [
     "Linters",
+    "Visualization",
     "Programming Languages"
   ],
   "keywords": [
     "marketo",
+    "marketo engage",
+    "adobe marketo",
     "email",
-    "html-email",
+    "html email",
+    "email template",
+    "email preview",
+    "email testing",
+    "linter",
     "outlook",
     "gmail",
-    "css",
-    "linter"
+    "dark mode",
+    "accessibility",
+    "mjml",
+    "css"
   ],
   "engines": {
     "vscode": "^1.90.0"
@@ -72,11 +82,6 @@
       {
         "command": "leadlens.fixAll",
         "title": "Leadlens: Fix All Problems"
-      },
-      {
-        "command": "leadlens.copySnippet",
-        "title": "Leadlens: Copy Fix Snippet",
-        "enablement": "false"
       }
     ],
     "configuration": {
@@ -85,7 +90,8 @@
         "leadlens.enable": {
           "type": "boolean",
           "default": true,
-          "description": "Lint HTML and MJML emails."
+          "description": "Lint HTML and MJML emails.",
+          "order": 1
         },
         "leadlens.include": {
           "type": "array",
@@ -97,7 +103,8 @@
             "**/*.htm",
             "**/*.mjml"
           ],
-          "markdownDescription": "Glob patterns to lint. Keeps the linter out of HTML that isn't email — set this to e.g. `emails/**/*.html` for a mixed repo."
+          "markdownDescription": "Glob patterns to lint. Keeps the linter out of HTML that isn't email — set this to e.g. `emails/**/*.html` for a mixed repo.",
+          "order": 2
         },
         "leadlens.run": {
           "type": "string",
@@ -106,7 +113,12 @@
             "onSave"
           ],
           "default": "onType",
-          "description": "When to re-lint."
+          "description": "When to re-lint.",
+          "enumDescriptions": [
+            "Lint as you type.",
+            "Lint when you save the file."
+          ],
+          "order": 3
         },
         "leadlens.clients": {
           "type": "array",
@@ -134,10 +146,34 @@
               "aol",
               "fastmail",
               "superhuman"
+            ],
+            "enumDescriptions": [
+              "Gmail",
+              "Gmail Android",
+              "Gmail iOS",
+              "Outlook 365",
+              "Outlook (New)",
+              "Outlook Classic",
+              "Outlook iOS",
+              "Outlook Android",
+              "Outlook for Mac",
+              "Apple Mail",
+              "Apple Mail iOS",
+              "Yahoo Mail",
+              "Yahoo Mail Android",
+              "Yahoo Mail iOS",
+              "Samsung Mail",
+              "Thunderbird",
+              "HEY Mail",
+              "Proton Mail",
+              "AOL Mail",
+              "Fastmail",
+              "Superhuman"
             ]
           },
           "default": [],
-          "markdownDescription": "Client IDs to report on. Empty means all 21. Run `Leadlens: Show Full Report` to see the list."
+          "markdownDescription": "Client IDs to report on. Empty means all 21. Run `Leadlens: Show Full Report` to see the list.",
+          "order": 4
         },
         "leadlens.skip": {
           "type": "array",
@@ -162,7 +198,8 @@
             ]
           },
           "default": [],
-          "description": "Checks to skip. Skipping accessibility also skips dark and mobile contrast. Contrast and targeting checks are general checks, not filtered by selected clients."
+          "description": "Checks to skip. Skipping accessibility also skips dark and mobile contrast. Contrast and targeting checks are general checks, not filtered by selected clients.",
+          "order": 5
         },
         "leadlens.rules": {
           "type": "object",
@@ -176,13 +213,15 @@
               "off"
             ]
           },
-          "markdownDescription": "Severity per rule, keyed by the code shown in the Problems panel — a CSS property (`border-radius`) or a rule id (`img-missing-alt`). `off` hides it entirely. Set it in `.leadlensrc` to make it the team's.\n\n```json\n{ \"border-radius\": \"error\", \"font-size\": \"off\" }\n```"
+          "markdownDescription": "Severity per rule, keyed by the code shown in the Problems panel — a CSS property (`border-radius`) or a rule id (`img-missing-alt`). `off` hides it entirely. Set it in `.leadlensrc` to make it the team's.\n\n```json\n{ \"border-radius\": \"error\", \"font-size\": \"off\" }\n```",
+          "order": 6
         },
         "leadlens.maxOccurrencesPerRule": {
           "type": "integer",
           "minimum": 1,
           "default": 20,
-          "markdownDescription": "A single broken rule can occur in dozens of elements. Underline at most this many of them per rule, so one mistake doesn't fill the Problems panel."
+          "markdownDescription": "A single broken rule can occur in dozens of elements. Underline at most this many of them per rule, so one mistake doesn't fill the Problems panel.",
+          "order": 7
         },
         "leadlens.marketo.context": {
           "type": "string",
@@ -202,7 +241,8 @@
           ],
           "default": "auto",
           "scope": "resource",
-          "markdownDescription": "How to interpret HTML in this folder. Auto-detection leaves ordinary HTML and other template languages alone; an explicit choice wins when inherited or assembled Marketo HTML is ambiguous."
+          "markdownDescription": "How to interpret HTML in this folder. Auto-detection leaves ordinary HTML and other template languages alone; an explicit choice wins when inherited or assembled Marketo HTML is ambiguous.",
+          "order": 8
         },
         "leadlens.preview.defaultClient": {
           "type": "string",
@@ -230,17 +270,43 @@
             "superhuman"
           ],
           "default": "gmail-web",
-          "markdownDescription": "Client the preview opens on. Run `Leadlens: Show Full Report` to see the IDs."
+          "markdownDescription": "Client the preview opens on. Run `Leadlens: Show Full Report` to see the IDs.",
+          "enumDescriptions": [
+            "Gmail",
+            "Gmail Android",
+            "Gmail iOS",
+            "Outlook 365",
+            "Outlook (New)",
+            "Outlook Classic",
+            "Outlook iOS",
+            "Outlook Android",
+            "Outlook for Mac",
+            "Apple Mail",
+            "Apple Mail iOS",
+            "Yahoo Mail",
+            "Yahoo Mail Android",
+            "Yahoo Mail iOS",
+            "Samsung Mail",
+            "Thunderbird",
+            "HEY Mail",
+            "Proton Mail",
+            "AOL Mail",
+            "Fastmail",
+            "Superhuman"
+          ],
+          "order": 9
         },
         "leadlens.preview.loadRemoteImages": {
           "type": "boolean",
           "default": false,
-          "markdownDescription": "Load images hosted elsewhere in the preview. **Off by default**: an email's images include its tracking pixels, so previewing one would tell the sender you opened it."
+          "markdownDescription": "Load images hosted elsewhere in the preview. **Off by default**: an email's images include its tracking pixels, so previewing one would tell the sender you opened it.",
+          "order": 10
         },
         "leadlens.resolveStylesheetLinks": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "Read local `<link rel=\"stylesheet\">` files and analyse the email with that CSS folded in, reporting findings in the stylesheet itself. The link is still reported separately — email clients drop external stylesheets, so a build step has to inline it before sending."
+          "markdownDescription": "Read local `<link rel=\"stylesheet\">` files and analyse the email with that CSS folded in, reporting findings in the stylesheet itself. The link is still reported separately — email clients drop external stylesheets, so a build step has to inline it before sending.",
+          "order": 11
         }
       }
     },
