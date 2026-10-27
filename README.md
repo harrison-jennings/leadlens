@@ -7,7 +7,7 @@
 [![Emailens engine](https://img.shields.io/github/package-json/dependency-version/harrison-jennings/leadlens/@emailens/engine?label=emailens%20engine&labelColor=121A2B&color=0E8F80)](https://github.com/emailens/engine)
 [![Website](https://img.shields.io/badge/website-leadlens.harrisonjennings.au-0E8F80?labelColor=121A2B)](https://leadlens.harrisonjennings.au)
 
-![Leadlens in VS Code: a Marketo template with a border-radius warning for Outlook Classic and its explanation, beside the email previewed in Gmail, Outlook Classic with the button reduced to highlighted text, and Apple Mail iOS in dark mode](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-product.png)
+![Leadlens in VS Code: a Marketo template with a padding warning for Outlook Classic and its explanation, beside the email previewed in Gmail, Outlook Classic with the button reduced to highlighted text, and Apple Mail iOS in dark mode](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-product.png)
 
 Leadlens shows how your email will look across 21 email clients as you type, flags what will break before it ships, and understands Marketo Email Editor 2.0, including variables, modules, editable regions and tokens. You get answers about your actual template, not false alarms about Marketo syntax.
 
@@ -16,7 +16,7 @@ Leadlens shows how your email will look across 21 email clients as you type, fla
 - **Linting where you write**: problems appear in the editor, with explanations on hover and one-click fixes.
 - **Private by default**: everything runs locally, and remote images stay off until you allow them.
 
-![A Marketo template in VS Code with the Leadlens preview beside it. Typing border-radius into the call-to-action button rounds it in the Gmail preview, and Leadlens underlines it at once. The hover explains that Outlook Classic drops border-radius; switching the preview to Outlook Classic shows the button reduced to highlighted text, and the Quick Fix menu offers a VML fix for rounded buttons in Outlook](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-demo.gif)
+![A Marketo template in VS Code with the Leadlens preview beside it. Typing padding into the call-to-action button turns it from highlighted text into a full button in the Gmail preview, and Leadlens underlines it at once. The hover explains that Outlook Classic doesn't support the padding; switching the preview to Outlook Classic shows the button reduced to highlighted text again, and the Quick Fix menu offers a fix for button padding in Outlook](https://raw.githubusercontent.com/harrison-jennings/leadlens/main/docs/brand/leadlens-demo.gif)
 
 ## Install
 

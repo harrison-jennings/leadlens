@@ -10,13 +10,13 @@
 
 const cards = [
   { name: "Gmail", mode: "light", score: "100", badge: "#3FD6C1", theme: "light", button: "border-radius:24px" },
-  { name: "Outlook Classic", mode: "light", score: "85", badge: "#F2B544", theme: "light", button: "display:inline;padding:0;border-radius:0" },
+  { name: "Outlook Classic", mode: "light", score: "91", badge: "#F2B544", theme: "light", button: "display:inline;padding:0;border-radius:0" },
   { name: "Apple Mail iOS", mode: "dark", score: "100", badge: "#3FD6C1", theme: "dark", button: "border-radius:24px" },
 ];
 const compactCards = [cards[0], cards[1]];
 ---
 
-<figure class="shot-frame" aria-label="Leadlens in VS Code: a Marketo template with padding and border-radius warnings for Outlook Classic and an explanation, beside the email previewed in Gmail, Outlook Classic and Apple Mail iOS dark mode. In Outlook Classic the button is reduced to highlighted text.">
+<figure class="shot-frame" aria-label="Leadlens in VS Code: a Marketo template with a padding warning for Outlook Classic and its explanation, and border-radius noted as ignored there, beside the email previewed in Gmail, Outlook Classic and Apple Mail iOS dark mode. In Outlook Classic the button is reduced to highlighted text.">
   <div class="window shot-full" aria-hidden="true">
     <div class="window-bar">
       <span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span>
@@ -31,22 +31,22 @@ const compactCards = [cards[0], cards[1]];
         <div class="code-line"><span class="ln">101</span><span><span class="t-punct">&lt;</span><span class="t-tag">tr</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">102</span><span>  <span class="t-punct">&lt;</span><span class="t-tag">td</span> <span class="t-attr">align</span>=<span class="t-str">"center"</span> <span class="t-attr">style</span>=<span class="t-str">"padding:16px 40px 40px;"</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">103</span><span>    <span class="t-punct">&lt;</span><span class="t-tag">a</span> <span class="t-attr">href</span>=<span class="t-str">"<span class="t-var">{"${buttonLink}"}</span>"</span></span></div>
-        <div class="code-line"><span class="ln">104</span><span>       <span class="t-attr">style</span>=<span class="t-str">"display:inline-block; <span class="squiggle">padding:14px 32px;</span></span></span></div>
-        <div class="code-line flagged"><span class="ln">105</span><span><span class="t-str">       <span class="squiggle">border-radius:24px;</span></span></span></div>
+        <div class="code-line flagged"><span class="ln">104</span><span>       <span class="t-attr">style</span>=<span class="t-str">"display:inline-block; <span class="squiggle">padding:14px 32px;</span></span></span></div>
+        <div class="code-line"><span class="ln">105</span><span><span class="t-str">       <span class="squiggle-info">border-radius:24px;</span></span></span></div>
         <div class="code-line"><span class="ln">106</span><span><span class="t-str">       background-color:<span class="t-var">{"${accentColor}"}</span>; color:#FFFFFF;"</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">107</span><span>      <span class="t-var">{"${buttonText}"}</span></span></div>
         <div class="code-line"><span class="ln">108</span><span>    <span class="t-punct">&lt;/</span><span class="t-tag">a</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">109</span><span>  <span class="t-punct">&lt;/</span><span class="t-tag">td</span><span class="t-punct">&gt;</span></span></div>
         <div class="code-line"><span class="ln">110</span><span><span class="t-punct">&lt;/</span><span class="t-tag">tr</span><span class="t-punct">&gt;</span></span></div>
         <div class="hover-card">
-          <div class="rule">border-radius</div>
-          Not supported in <strong>Outlook Classic</strong>, so the button's corners render square there. Add a VML button in an Outlook conditional comment to keep them rounded.
-          <div class="fix">Quick fix: silence with a reason</div>
+          <div class="rule">padding</div>
+          Not supported in <strong>Outlook Classic</strong>, which drops this padding, so the button shrinks to its text there. Put it on a table cell, or set mso-padding-alt on one.
+          <div class="fix">Quick fix: ignore padding on this line</div>
         </div>
         <div class="problems">
           <div class="problems-title">Problems</div>
           <div class="problem"><span class="sev-warn">▲</span>padding · Outlook Classic<span class="line">104</span></div>
-          <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
+          <div class="problem"><span class="sev-info">ⓘ</span>border-radius · ignored by Outlook Classic<span class="line">105</span></div>
           <div class="problem"><span class="sev-info">ⓘ</span>@media prefers-color-scheme · ignored by Gmail, Outlook Classic<span class="line">30</span></div>
         </div>
       </div>
@@ -93,19 +93,19 @@ const compactCards = [cards[0], cards[1]];
     </div>
     <div class="editor">
       <div class="code-line"><span class="ln">103</span><span><span class="t-punct">&lt;</span><span class="t-tag">a</span> <span class="t-attr">href</span>=<span class="t-str">"<span class="t-var">{"${buttonLink}"}</span>"</span></span></div>
-      <div class="code-line"><span class="ln">104</span><span>  <span class="t-attr">style</span>=<span class="t-str">"<span class="squiggle">padding:14px 32px;</span></span></span></div>
-      <div class="code-line flagged"><span class="ln">105</span><span><span class="t-str">  <span class="squiggle">border-radius:24px;</span></span></span></div>
+      <div class="code-line flagged"><span class="ln">104</span><span>  <span class="t-attr">style</span>=<span class="t-str">"<span class="squiggle">padding:14px 32px;</span></span></span></div>
+      <div class="code-line"><span class="ln">105</span><span><span class="t-str">  <span class="squiggle-info">border-radius:24px;</span></span></span></div>
       <div class="code-line"><span class="ln">106</span><span><span class="t-str">  background:<span class="t-var">{"${accentColor}"}</span>;"</span><span class="t-punct">&gt;</span></span></div>
       <div class="code-line"><span class="ln">107</span><span>  <span class="t-var">{"${buttonText}"}</span></span></div>
       <div class="hover-card">
-        <div class="rule">border-radius</div>
-        Not supported in <strong>Outlook Classic</strong>, so the button's corners render square there. Add a VML button in an Outlook conditional comment to keep them rounded.
-        <div class="fix">Quick fix: silence with a reason</div>
+        <div class="rule">padding</div>
+        Not supported in <strong>Outlook Classic</strong>, which drops this padding, so the button shrinks to its text there. Put it on a table cell, or set mso-padding-alt on one.
+        <div class="fix">Quick fix: ignore padding on this line</div>
       </div>
       <div class="problems">
         <div class="problems-title">Problems</div>
         <div class="problem"><span class="sev-warn">▲</span>padding · Outlook Classic<span class="line">104</span></div>
-        <div class="problem"><span class="sev-warn">▲</span>border-radius · Outlook Classic<span class="line">105</span></div>
+        <div class="problem"><span class="sev-info">ⓘ</span>border-radius · ignored by Outlook Classic<span class="line">105</span></div>
       </div>
     </div>
     <div class="previews">

@@ -420,6 +420,16 @@ code {
   color: var(--faint-dark);
 }
 
+.hero-alt {
+  margin-top: -6px;
+}
+
+.hero-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 @media (max-width: 560px) {
   .hero-copy {
     align-items: stretch;
@@ -530,6 +540,11 @@ code {
 
 .squiggle {
   text-decoration: underline wavy var(--warn);
+  text-underline-offset: 4px;
+}
+
+.squiggle-info {
+  text-decoration: underline wavy #3794ff;
   text-underline-offset: 4px;
 }
 
@@ -1476,6 +1491,12 @@ code {
   text-decoration: none;
   color: var(--text);
   font-size: 14px;
+}
+
+.pill-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .pill-link::before {

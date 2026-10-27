@@ -1,6 +1,6 @@
 ---
 import LogoMark from "./LogoMark.astro";
-import { DOWNLOAD_URL, REPO_URL } from "../data/site.mjs";
+import { MARKETPLACE_URL, REPO_URL } from "../data/site.mjs";
 
 interface Props {
   tone?: "dark" | "light";
@@ -21,7 +21,7 @@ const { tone = "dark", current } = Astro.props;
       <a href="/docs/">Docs</a>
       <a href="/changelog/" aria-current={current === "changelog" ? "page" : undefined}>Changelog</a>
       <a href={REPO_URL}>GitHub</a>
-      <a class="nav-download" href={DOWNLOAD_URL}>Download</a>
+      <a class="nav-download" href={MARKETPLACE_URL}>Install</a>
     </nav>
     <details class="nav-menu">
       <summary aria-label="Menu">
@@ -31,7 +31,7 @@ const { tone = "dark", current } = Astro.props;
         <a href="/docs/">Docs</a>
         <a href="/changelog/">Changelog</a>
         <a href={REPO_URL}>GitHub</a>
-        <a class="nav-download" href={DOWNLOAD_URL}>Download</a>
+        <a class="nav-download" href={MARKETPLACE_URL}>Install</a>
       </nav>
     </details>
   </div>

@@ -2,6 +2,9 @@
   "name": "leadlens-site",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "sync": "node scripts/sync-content.mjs",
     "dev": "node scripts/sync-content.mjs && astro dev",

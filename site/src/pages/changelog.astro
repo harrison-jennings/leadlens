@@ -3,7 +3,7 @@ import Marketing from "../layouts/Marketing.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import { Content } from "../generated/changelog.md";
-import { RELEASES_URL } from "../data/site.mjs";
+import { MARKETPLACE_URL, RELEASES_URL } from "../data/site.mjs";
 ---
 
 <Marketing title="Changelog · Leadlens" description="What's new in Leadlens, release by release.">
@@ -13,8 +13,11 @@ import { RELEASES_URL } from "../data/site.mjs";
       <div class="container">
         <div class="page-intro">
           <h1>Changelog</h1>
-          <p class="lede">What's new in Leadlens. Every change merged to the main branch is published as the latest build, and its compatibility data updates with the Emailens engine.</p>
-          <a class="pill-link" href={RELEASES_URL}>Latest build on GitHub</a>
+          <p class="lede">What's new in Leadlens. Each new version reaches Marketplace and Open VSX installs as an automatic update, and its compatibility data updates with the Emailens engine.</p>
+          <div class="pill-links">
+            <a class="pill-link" href={MARKETPLACE_URL}>Visual Studio Marketplace</a>
+            <a class="pill-link" href={RELEASES_URL}>Latest build on GitHub</a>
+          </div>
         </div>
         <div class="prose">
           <Content />
