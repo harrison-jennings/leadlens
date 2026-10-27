@@ -137,7 +137,9 @@ suite("the extension in a real editor", () => {
     const document = await openLinted("clients.html", EMAIL);
     const radius = leadlensDiagnostics(document.uri).filter((d) => codeOf(d) === "border-radius");
     assert.equal(radius.length, 1, "the same property was reported more than once for one position");
-    assert.match(radius[0].message, /not supported in/);
+    // Since engine 0.16.4 square corners are Outlook Classic's fallback, so
+    // the client is named as ignoring the radius rather than not supporting it.
+    assert.match(radius[0].message, /ignored by Outlook Classic/);
   });
 
   test("a Quick Fix is offered, and applying it repairs the source", async () => {

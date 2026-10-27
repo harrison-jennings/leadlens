@@ -53,10 +53,11 @@ describe("findings point at the source", () => {
 
 describe("one underline per element, not per client", () => {
   test("a property broken in several clients is a single finding naming them", () => {
-    // Ordinary border-radius now fails only in Classic; use a property that
-    // still exercises grouping across several clients.
-    const html = '<body><div style="transition:all 0.3s">a</div></body>';
-    const inline = findings(html).filter((f) => f.code === "transition");
+    // Ordinary border-radius is only ignored by Outlook Classic, and since
+    // engine 0.16.8 a missing transition is too graceful to warn; text-shadow
+    // still fails in several clients.
+    const html = '<body><div style="text-shadow:0 1px 2px #000">a</div></body>';
+    const inline = findings(html).filter((f) => f.code === "text-shadow");
     expect(inline).toHaveLength(1);
     expect(inline[0].clients!.length).toBeGreaterThan(1);
     expect(inline[0].source).toMatch(/^\d+ clients$/);
@@ -65,25 +66,27 @@ describe("one underline per element, not per client", () => {
   });
 
   test("dropped and partial clients merge into one finding at the worse severity", () => {
-    // `transition: all` is unsupported in Gmail and Outlook and partial in
-    // Yahoo, whose note is specifically about the `all` keyword. Both
+    // `position: absolute` is unsupported in Gmail and Outlook Classic and
+    // partial in Yahoo, whose note is about absolute positioning. Both
     // severities describe the same characters, so they are one underline.
     //
     // The engine gates partial support on the value, so this needs a value the
-    // caveat is actually about: `border-radius: 4px` used to produce a mixed
-    // finding and no longer does, because Yahoo renders it correctly.
-    const html = '<html><body><div style="transition:all 0.3s">a</div></body></html>';
-    const merged = findings(html).filter((f) => f.code === "transition");
+    // caveat is actually about. (`transition: all` served until engine 0.16.8
+    // made a missing transition info.)
+    const html = '<html><body><div style="position:absolute">a</div></body></html>';
+    const merged = findings(html).filter((f) => f.code === "position");
     expect(merged).toHaveLength(1);
     expect(merged[0].message).toContain("not supported in");
     expect(merged[0].message).toContain("partial support in");
     expect(merged[0].severity).toBe("warning");
+    expect(merged[0].clients).toContain("yahoo-mail");
 
-    // …and the value that the caveat is not about produces no partial half.
-    const safe = findings('<html><body><div style="transition:opacity 0.3s">a</div></body></html>')
-      .filter((f) => f.code === "transition");
+    // …and the value that the caveat is not about produces no partial half
+    // for Yahoo.
+    const safe = findings('<html><body><div style="position:relative">a</div></body></html>')
+      .filter((f) => f.code === "position");
     expect(safe[0].message).toContain("not supported in");
-    expect(safe[0].clients).not.toContain("Yahoo Mail");
+    expect(safe[0].clients).not.toContain("yahoo-mail");
   });
 
   test("a client that skips progressive enhancement is named as ignoring it, not as partial", () => {
