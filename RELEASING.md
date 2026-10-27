@@ -22,7 +22,7 @@ Earlier GitHub releases are kept, so every build stays downloadable. The newest 
 
 Both registries are signed in to from the `marketplace` environment in the repository's settings.
 
-- **Visual Studio Marketplace**: the publisher is `leadlens`. The publishing job signs in as an Azure managed identity, using a short-lived token that GitHub issues to the job, so there is no password or token to renew. The identity is a Contributor on the publisher, and trusts only jobs in this repository's `marketplace` environment. Its IDs are the repository variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID`. Until `AZURE_CLIENT_ID` is set, the job is skipped.
+- **Visual Studio Marketplace**: the publisher is `leadlens`. The publishing job signs in as an Azure managed identity, using a short-lived token that GitHub issues to the job, so there is no password or token to renew. The identity is a Contributor on the publisher, and trusts only jobs in this repository's `marketplace` environment. Its IDs are the repository variables `AZURE_CLIENT_ID` and `AZURE_TENANT_ID`; it needs no Azure subscription or role. Each run prints the identity's Marketplace ID, which is how it was added to the publisher. Until `AZURE_CLIENT_ID` is set, the job is skipped.
 - **Open VSX**: the namespace is `leadlens`. The publishing token is the `OVSX_PAT` secret of the `marketplace` environment. Without it, the job publishes nothing and leaves a notice on the run.
 
 A failed publish leaves the GitHub release in place. Re-run the failed job from the Actions tab; a version a registry already has is skipped, so re-running is always safe.
