@@ -4,7 +4,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import ProductShot from "../components/ProductShot.astro";
 import extension from "../generated/extension.json";
-import { CLIENTS, DOWNLOAD_URL, PORTFOLIO_URL, SITE_URL, TAGLINE } from "../data/site.mjs";
+import { CLIENTS, DOWNLOAD_URL, MARKETPLACE_URL, OPEN_VSX_URL, PORTFOLIO_URL, SITE_URL, TAGLINE } from "../data/site.mjs";
 
 // Two rows that scroll in opposite directions by half their length. Each half
 // holds the row four times, so it is wider than any screen (5,000 px or more)
@@ -31,7 +31,7 @@ const values = [
 
 const problems = [
   { level: "error", text: "Hero image has no alt text", code: "img-missing-alt" },
-  { level: "warn", text: "Not supported in Outlook Classic", code: "border-radius" },
+  { level: "warn", text: "Not supported in Outlook Classic", code: "padding" },
   { level: "warn", text: "Link uses http://", code: "insecure-link" },
   { level: "info", text: "Token has no local preview value", code: "marketo-token" },
 ];
@@ -64,8 +64,12 @@ const faqs = [
     answer: "No. Any HTML email gets previews and linting, and MJML is supported too. The Marketo features switch on when Leadlens detects Email Editor 2.0 syntax.",
   },
   {
+    question: "Does it work in Cursor, VSCodium or Windsurf?",
+    answer: "Yes. Leadlens is also published to Open VSX, the extension registry those editors use, so you can install it from their Extensions view.",
+  },
+  {
     question: "How do I update?",
-    answer: "Download the latest build and install it over the top; it replaces the installed version. Each build includes the newest compatibility data from the Emailens engine.",
+    answer: "You don't need to. Installs from the Visual Studio Marketplace or Open VSX update automatically, and each update carries the newest compatibility data from the Emailens engine. If you installed a downloaded VSIX file, install the newest download over the top.",
   },
 ];
 
@@ -81,6 +85,7 @@ const structuredData = [
     softwareVersion: extension.version,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     license: "https://opensource.org/licenses/MIT",
+    installUrl: MARKETPLACE_URL,
     downloadUrl: DOWNLOAD_URL,
     url: SITE_URL,
     image: `${SITE_URL}/generated/og.png`,
@@ -111,16 +116,17 @@ const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" strok
         <h1>Preview every inbox before you&nbsp;send.</h1>
         <p class="hero-lede">Leadlens shows your email in 21 email clients as you type, flags what will break, and understands Marketo Email Editor 2.0 variables, modules and tokens.</p>
         <div class="hero-actions">
-          <a class="button button-primary button-download" href={DOWNLOAD_URL}>
+          <a class="button button-primary button-download" href={MARKETPLACE_URL}>
             <span class="button-label">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
-              Download for VS Code
+              Install for VS Code
             </span>
             <span class="button-sub">Version {extension.version} · VS Code {extension.vscode} or later</span>
           </a>
           <a class="button button-secondary" href="/docs/">Read the docs</a>
         </div>
         <p class="hero-note">Free · Runs locally · No account</p>
+        <p class="hero-note hero-alt">Also on <a href={OPEN_VSX_URL}>Open VSX</a> for Cursor and VSCodium, or <a href={DOWNLOAD_URL}>download the VSIX</a>.</p>
       </div>
       <ProductShot />
     </div>
@@ -240,26 +246,26 @@ const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" strok
     <section class="section white">
       <div class="container">
         <div class="section-head">
-          <h2 class="section-title">Install in three steps.</h2>
+          <h2 class="section-title">Get started in three steps.</h2>
         </div>
         <ol class="steps">
           <li class="step">
             <span class="number">01</span>
-            <strong>Download</strong>
-            <span>Get <code>leadlens.vsix</code> from the <a href={DOWNLOAD_URL}>latest release</a>.</span>
+            <strong>Install</strong>
+            <span>Search for <strong>Leadlens</strong> in VS Code's Extensions view, or install it from the <a href={MARKETPLACE_URL}>Visual Studio Marketplace</a>.</span>
           </li>
           <li class="step">
             <span class="number">02</span>
-            <strong>Install</strong>
-            <span>In VS Code: Extensions → ⋯ → Install from VSIX. Or run <code>code --install-extension leadlens.vsix</code>.</span>
-          </li>
-          <li class="step">
-            <span class="number">03</span>
             <strong>Preview</strong>
             <span>Open an email and run <strong>Leadlens: Open Preview to the Side</strong>.</span>
           </li>
+          <li class="step">
+            <span class="number">03</span>
+            <strong>Fix</strong>
+            <span>Problems appear as you type. Hover one to see which clients it breaks, and use Quick Fix to repair it.</span>
+          </li>
         </ol>
-        <p class="note">Requires VS Code {extension.vscode} or later. Compatibility data comes from the open-source Emailens engine and updates with each new build. To update, install the newest download over the top.</p>
+        <p class="note">Requires VS Code {extension.vscode} or later. In Cursor, VSCodium, Windsurf and other editors that use Open VSX, install it from <a href={OPEN_VSX_URL}>Open VSX</a>, or <a href={DOWNLOAD_URL}>download the VSIX</a> to install it from a file. Marketplace and Open VSX installs update automatically, each update with the newest compatibility data from the open-source Emailens engine.</p>
       </div>
     </section>
 
@@ -288,10 +294,10 @@ const check = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" strok
             <p>Free, local and ready in a minute.</p>
           </div>
           <div class="cta-actions">
-  <a class="button button-primary button-download" href={DOWNLOAD_URL}>
+  <a class="button button-primary button-download" href={MARKETPLACE_URL}>
               <span class="button-label">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"></path><path d="m7 10 5 5 5-5"></path><path d="M5 20h14"></path></svg>
-                Download for VS Code
+                Install for VS Code
               </span>
               <span class="button-sub">Version {extension.version} · VS Code {extension.vscode} or later</span>
             </a>

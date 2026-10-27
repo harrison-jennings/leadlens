@@ -2,6 +2,9 @@
 
 export const SITE_URL = "https://leadlens.harrisonjennings.au";
 export const REPO_URL = "https://github.com/harrison-jennings/leadlens";
+// Installs that update automatically, and the file for installing by hand.
+export const MARKETPLACE_URL = "https://marketplace.visualstudio.com/items?itemName=leadlens.leadlens";
+export const OPEN_VSX_URL = "https://open-vsx.org/extension/leadlens/leadlens";
 export const DOWNLOAD_URL = `${REPO_URL}/releases/latest/download/leadlens.vsix`;
 export const RELEASES_URL = `${REPO_URL}/releases/latest`;
 export const PORTFOLIO_URL = "https://harrisonjennings.au";

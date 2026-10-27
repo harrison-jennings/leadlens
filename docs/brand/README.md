@@ -12,7 +12,7 @@ The Leadlens mark is a lens dot between token braces, `{ ● }`. It comes from M
 | `leadlens-lockup-dark.svg` / `.png` | Icon and wordmark for dark backgrounds. |
 | `leadlens-social.png` | GitHub's social preview card (1280 × 640). |
 | `leadlens-product.png` | The README's header image: the website's product illustration, rendered at 2× (2400 × 1188) with transparent corners. Re-render it if the illustration in `site/src/components/ProductShot.astro` changes. |
-| `leadlens-demo.gif` | The README's demonstration (1280 px wide, about 18 seconds), recorded from the packaged extension in VS Code. It uses `samples/marketo-newsletter.html` without the button's VML fallback: `border-radius` is typed into the call-to-action button, its warning is hovered, the preview switches from Gmail to Outlook Classic, and the Quick Fix menu opens. Record it again if the preview's layout changes noticeably. |
+| `leadlens-demo.gif` | The README's demonstration (1280 px wide, about 18 seconds), recorded from the packaged extension in VS Code. It uses `samples/marketo-newsletter.html` without the button's VML fallback: `padding` is typed into the call-to-action button, its warning is hovered, the preview switches from Gmail to Outlook Classic, and the Quick Fix menu opens. Record it again if the preview's layout changes noticeably. |
 | `../icon.png`, `../icon.svg` | The extension icon VS Code shows (256 px PNG). |
 | `../../media/preview-light.svg`, `../../media/preview-dark.svg` | The preview tab icon: the glyph without its tile, for light and dark themes. |
 

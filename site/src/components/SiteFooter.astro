@@ -1,6 +1,6 @@
 ---
 import LogoMark from "./LogoMark.astro";
-import { DOWNLOAD_URL, PORTFOLIO_URL, REPO_URL, TAGLINE, TRADEMARK_NOTICE } from "../data/site.mjs";
+import { DOWNLOAD_URL, MARKETPLACE_URL, OPEN_VSX_URL, PORTFOLIO_URL, REPO_URL, TAGLINE, TRADEMARK_NOTICE } from "../data/site.mjs";
 const year = new Date().getFullYear();
 ---
 
@@ -17,7 +17,9 @@ const year = new Date().getFullYear();
       <div class="footer-columns">
         <nav class="footer-column" aria-labelledby="footer-product">
           <h2 id="footer-product">Product</h2>
-          <a href={DOWNLOAD_URL}>Download</a>
+          <a href={MARKETPLACE_URL}>Visual Studio Marketplace</a>
+          <a href={OPEN_VSX_URL}>Open VSX</a>
+          <a href={DOWNLOAD_URL}>Download the VSIX</a>
           <a href="/docs/">Documentation</a>
           <a href="/changelog/">Changelog</a>
         </nav>

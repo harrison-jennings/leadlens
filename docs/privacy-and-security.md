@@ -7,6 +7,7 @@ Emails often contain tracking pixels, links with personal identifiers and conten
 - Leadlens has no telemetry and no accounts.
 - It makes no network requests of its own. All analysis and every preview runs locally.
 - It never connects to Marketo or any other email platform.
+- Installing it from the Visual Studio Marketplace or Open VSX is handled by your editor, which checks the registry for updates as it does for every extension.
 
 ## Previews are sandboxed
 
@@ -32,7 +33,7 @@ Compiling MJML runs the `mjml` package installed in your project, which is code 
 
 ## Verifying a download
 
-Every release is built by the project's GitHub Actions workflow, which signs a record of where the file came from: this repository, the exact commit, and the workflow that built it. To check that a downloaded `leadlens.vsix` is exactly what that workflow produced, run this with the [GitHub CLI](https://cli.github.com):
+Every release is built by the project's GitHub Actions workflow, which publishes the same package to GitHub, the Visual Studio Marketplace and Open VSX. It also signs a record of where the file came from: this repository, the exact commit, and the workflow that built it. To check that a downloaded `leadlens.vsix` is exactly what that workflow produced, run this with the [GitHub CLI](https://cli.github.com):
 
 ```sh
 gh attestation verify leadlens.vsix --repo harrison-jennings/leadlens

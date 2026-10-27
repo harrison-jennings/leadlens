@@ -9,21 +9,31 @@ Install Leadlens, open your first preview and read your first findings.
 
 ## Install
 
-Leadlens is distributed as a VSIX package from the project's GitHub releases.
+Install Leadlens from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=leadlens.leadlens): open the Extensions view in VS Code, search for **Leadlens** and choose **Install**. From a terminal:
+
+```sh
+code --install-extension leadlens.leadlens
+```
+
+Updates install automatically, each with the newest compatibility data from the Emailens engine.
+
+### Cursor, VSCodium and Windsurf
+
+These editors install extensions from [Open VSX](https://open-vsx.org/extension/leadlens/leadlens). Search for **Leadlens** in their Extensions view in the same way.
+
+### From a file
+
+To install without either registry, for example on a computer that can't reach them:
 
 1. Download `leadlens.vsix` from the [latest release](https://github.com/harrison-jennings/leadlens/releases/latest).
 2. In VS Code, open the Extensions view, choose **⋯ → Install from VSIX…** and select the file.
 3. Reload the window when prompted.
 
-From a terminal:
+From a terminal, run `code --install-extension leadlens.vsix`. To update an install from a file, install a newer download the same way. Every build has a higher version number than the one before it, so it replaces the installed version.
 
-```sh
-code --install-extension leadlens.vsix
-```
+### Going back to an earlier version
 
-To update, install the newer download the same way. Every build has a higher version number than the one before it, so it replaces the installed version.
-
-Every earlier build stays on the [releases page](https://github.com/harrison-jennings/leadlens/releases). To go back to one, download its `leadlens.vsix` and install it the same way; from a terminal, add `--force`, because the installed version is newer.
+Every earlier build stays on the [releases page](https://github.com/harrison-jennings/leadlens/releases). To go back to one, download its `leadlens.vsix` and install it the same way; from a terminal, add `--force`, because the installed version is newer. Then turn off **Auto Update** for Leadlens in the Extensions view, or VS Code will update it again.
 
 ## Your first preview
 
