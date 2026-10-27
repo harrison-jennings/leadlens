@@ -396,6 +396,47 @@ code {
   letter-spacing: -0.035em;
 }
 
+/* "every inbox" spins through client names (src/scripts/roll-clients.ts).
+   The real words stay in the page and only turn transparent while a
+   decorative reel spins over them. The reel's items are 1.3em tall and it sits
+   0.13em higher than the 1.04em line, so their baselines match the real
+   text's. The word ends its line, so the reel never moves another word. */
+.hero-cycle {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.hero-cycle.is-rolling .hero-cycle-word {
+  color: transparent;
+}
+
+.hero-reel {
+  position: absolute;
+  top: -0.13em;
+  left: 0;
+  height: 1.3em;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+  mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+}
+
+.hero-cycle.is-rolling .hero-reel {
+  visibility: visible;
+}
+
+.hero-reel-strip,
+.hero-reel-item {
+  display: block;
+}
+
+.hero-reel-item {
+  width: max-content;
+  height: 1.3em;
+  line-height: 1.3em;
+}
+
 .hero-lede {
   margin: 0;
   max-width: 680px;
@@ -442,6 +483,16 @@ code {
     font-size: 11.5px;
     padding: 6px 12px;
     border-radius: 14px;
+  }
+
+  /* "Preview every inbox" doesn't fit one line here, so the typed word gets
+     a line to itself and never pulls "Preview" or "before" across. */
+  .hero-cycle {
+    display: block;
+  }
+
+  .hero-break {
+    display: none;
   }
 
   .hero-actions {
