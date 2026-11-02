@@ -7,6 +7,9 @@ Each build's exact changes, including Emailens engine updates, are listed in its
 - Leadlens is available from the Visual Studio Marketplace and Open VSX, and updates automatically. Installing a downloaded VSIX still works.
 - The settings editor names each email client beside its ID, and describes both `leadlens.run` options.
 - Copy Fix Snippet no longer appears among the extension's commands. It was only ever available as a quick fix, and still is.
+- New compatibility checks from the Emailens engine: `rem` units, CSS nesting, quoted inline fonts and forms in Yahoo Mail, Gmail on iPhone inverting dark backgrounds, and Gmail rules that override a button's inline styles. Outlook for Mac is now graded as the current app instead of the 2016 one. Expect more warnings and some lower scores on existing templates.
+- More accurate previews for Outlook Classic, Outlook for Mac, Yahoo Mail and Gmail Android dark mode, including Marketo's `[if true]` conditionals in Outlook Classic.
+- Findings about one specific client behaviour now explain it and say what to do, instead of calling the property "not supported".
 
 ## 1.0 — October 2026
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { auditEmail } from "@emailens/engine";
+import { auditEmail, CSS_SUPPORT } from "@emailens/engine";
 import { toFindings, worstClient } from "../report";
 
 /**
@@ -122,6 +122,52 @@ describe("one underline per element, not per client", () => {
       maxOccurrencesPerRule: 5,
     }).filter((f) => f.code === "border-radius");
     expect(capped).toHaveLength(5);
+  });
+});
+
+describe("a client behaviour is not a lack of support", () => {
+  const QUOTED_FONT = `<html><body><p style="font-family:'Courier New',Courier,monospace">a</p></body></html>`;
+  const DARK_BACKGROUND = '<html><body><table><tr><td bgcolor="#111111" style="color:#ffffff">a</td></tr></table></body></html>';
+
+  test("a quoted inline font says what Yahoo does, and how to fix it", () => {
+    // The support table rates font-family as fine in every client, and the
+    // hover says so. Only the quotes are the problem.
+    expect(CSS_SUPPORT["font-family"]["yahoo-mail"]).toBe("supported");
+    const finding = findings(QUOTED_FONT).find((f) => f.code === "font-family")!;
+    expect(finding.message).not.toContain("not supported");
+    expect(finding.message).toContain("quoted font");
+    expect(finding.message).toContain("without quotes");
+    expect(finding.message).toContain("Affected clients: Yahoo Mail.");
+    expect(finding.severity).toBe("warning");
+    expect(finding.clients).toEqual(["yahoo-mail"]);
+  });
+
+  test("Gmail on iPhone inverting dark backgrounds is explained, not called unsupported", () => {
+    const finding = findings(DARK_BACKGROUND).find((f) => f.code === "dark-mode-inversion")!;
+    expect(finding.message).not.toContain("not supported");
+    expect(finding.message).toContain("inverts every colour");
+    expect(finding.source).toBe("gmail-ios");
+  });
+
+  test("a behaviour leaves with its client", () => {
+    const selected = findings(QUOTED_FONT, { clients: ["gmail-web"] });
+    expect(selected.some((f) => f.code === "font-family")).toBe(false);
+  });
+
+  test("a value the table does rate as unsupported still says so", () => {
+    const html = '<html><body><p style="font-size:1rem">a</p></body></html>';
+    const finding = findings(html).find((f) => f.code === "unit-rem")!;
+    expect(finding.message).toContain("not supported in");
+    expect(finding.clients).toContain("outlook-windows-legacy");
+  });
+
+  test("a Gmail wrapper rule is reported once, with its explanation", () => {
+    const html = '<html><head><style>u + #body a{color:inherit !important}</style></head>'
+      + '<body id="body"><a href="https://example.com" style="color:#ffffff;background:#000000;padding:10px">Go</a></body></html>';
+    const found = findings(html).filter((f) => f.code === "gmail-wrapper-overrides-inline");
+    expect(found).toHaveLength(1);
+    expect(found[0].source).toBe("style-survival");
+    expect(found[0].message).toContain("Narrow the selector");
   });
 });
 

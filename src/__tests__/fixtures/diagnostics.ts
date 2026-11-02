@@ -5,8 +5,8 @@ export const VML_COMPONENT = `<html><body><table><tr><td class="mktoText" id="bo
 
 export const STYLE_SURVIVAL = '<html><body><div style="color:rgb(0 0 0);padding:12px">Body copy</div></body></html>';
 
-export const DARK_CONTRAST = '<html><body><div style="background-color:#ffffff">' +
-  '<p style="color:#555555;font-size:14px">Body copy</p></div></body></html>';
+export const DARK_CONTRAST = '<html><body><div style="background-color:#fbbf24">' +
+  '<p style="color:#333333;font-size:14px">Body copy</p></div></body></html>';
 
 export const MOBILE_CONTRAST = `<html><head><style>
 .card{background-color:#111111}

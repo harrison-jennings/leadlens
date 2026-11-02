@@ -36,6 +36,7 @@ Marketo templates also get their own structural checks, described in [Marketo Em
 - The **code** in the Problems panel is the rule: a CSS property such as `border-radius`, or a rule ID such as `img-missing-alt`. Use it in `leadlens.rules` and in suppression comments.
 - The **source** shows the category, and for compatibility findings, the client: `leadlens(outlook-windows-legacy)`.
 - A compatibility finding names its clients in up to three groups. *Not supported in* means the client drops the property and the email looks different there. *Partial support in* means it works with limits. *Ignored by* means the client skips it harmlessly and shows the email's default version, as with responsive `@media` queries and dark-mode styles. A finding with only the last two is information, not a warning.
+- Some compatibility findings describe one specific behaviour instead of a property's support, such as Yahoo Mail dropping a quoted font name from an inline `font-family`, or Gmail on iPhone inverting dark backgrounds. These explain what the client does and what to do about it, then list the affected clients.
 
 Findings point at the exact characters responsible, including inside linked stylesheets, composed components and Marketo substitutions. When the engine can't place a finding reliably, for example a rule about the whole document, it's reported at the top of the file instead.
 
