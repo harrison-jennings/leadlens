@@ -71,6 +71,7 @@ const CONTEXT_OWNED_COMPATIBILITY_RULES = new Set([
   "outlook-web-chained-class",
   "outlook-first-class-only",
   "outlook-first-class-descendants",
+  "gmail-wrapper-overrides-inline",
 ]);
 
 interface Issue {
@@ -255,6 +256,12 @@ function appendContextFindings(
  * layout there; calling Outlook Classic's support for `@media` partial would
  * be wrong. The engine's support table, which the hovers also read, tells the
  * two apart.
+ *
+ * Nor is every warning about support at all. Gmail on iPhone inverting a dark
+ * background, or Yahoo dropping a quoted font name from an inline font-family,
+ * is a specific behaviour in a client the table doesn't rate as limited. "Not
+ * supported" would be false there, and would contradict the hover, so those
+ * keep the engine's own explanation and advice.
  */
 function compatibilityFindings(
   warnings: CSSWarning[],
@@ -268,6 +275,8 @@ function compatibilityFindings(
     unsupported: string[];
     ignored: string[];
     partial: string[];
+    /** The engine's explanation, and the clients it applies to. */
+    behaviours: Map<string, Set<string>>;
   }
   const groups = new Map<string, Group>();
 
@@ -275,19 +284,25 @@ function compatibilityFindings(
     if (clients && !clients.has(w.client)) continue;
     for (const loc of occurrences(w, Infinity)) {
       const key = `${w.property} ${loc ? loc.offset : "doc"}`;
-      const group = groups.get(key) ?? {
+      const group: Group = groups.get(key) ?? {
         property: w.property,
         loc,
         severity: "info" as Severity,
         unsupported: [],
         ignored: [],
         partial: [],
+        behaviours: new Map(),
       };
+      const support = CSS_SUPPORT[w.property]?.[w.client];
+      if (support !== "unsupported" && support !== "partial") {
+        const behaviour = [w.message, w.suggestion].filter(Boolean).join("\n");
+        group.behaviours.set(behaviour, (group.behaviours.get(behaviour) ?? new Set()).add(w.client));
+      }
       // Anything worse than info means the property is dropped outright in
       // that client, with a visible cost. Info is partial support, or a
       // feature the client skips harmlessly.
-      if (w.severity !== "info") group.unsupported.push(w.client);
-      else if (CSS_SUPPORT[w.property]?.[w.client] === "unsupported") group.ignored.push(w.client);
+      else if (w.severity !== "info") group.unsupported.push(w.client);
+      else if (support === "unsupported") group.ignored.push(w.client);
       else group.partial.push(w.client);
       group.severity = worseOf(group.severity, w.severity);
       groups.set(key, group);
@@ -308,13 +323,23 @@ function compatibilityFindings(
     if (group.unsupported.length) parts.push(`not supported in ${describe(group.unsupported)}`);
     if (group.ignored.length) parts.push(`ignored by ${describe(group.ignored)}`);
     if (group.partial.length) parts.push(`partial support in ${describe(group.partial)}`);
-    const involved = [...group.unsupported, ...group.ignored, ...group.partial];
+    const behaviours = [...group.behaviours].map(([behaviour, affected]) =>
+      `${behaviour}\nAffected clients: ${describe([...affected], Infinity)}.`);
+    const involved = [
+      ...group.unsupported,
+      ...group.ignored,
+      ...group.partial,
+      ...[...group.behaviours.values()].flatMap((affected) => [...affected]),
+    ];
 
     findings.push({
       severity: group.severity,
       source: involved.length === 1 ? involved[0] : `${involved.length} clients`,
       code: group.property,
-      message: `${group.property} — ${parts.join("; ")}`,
+      message: [
+        ...(parts.length ? [`${group.property} — ${parts.join("; ")}`] : []),
+        ...behaviours,
+      ].join("\n"),
       loc: group.loc,
       clients: involved,
     });
