@@ -10,6 +10,9 @@ Each build's exact changes, including Emailens engine updates, are listed in its
 - New compatibility checks from the Emailens engine: `rem` units, CSS nesting, quoted inline fonts and forms in Yahoo Mail, Gmail on iPhone inverting dark backgrounds, and Gmail rules that override a button's inline styles. Outlook for Mac is now graded as the current app instead of the 2016 one. Expect more warnings and some lower scores on existing templates.
 - More accurate previews for Outlook Classic, Outlook for Mac, Yahoo Mail and Gmail Android dark mode, including Marketo's `[if true]` conditionals in Outlook Classic.
 - Findings about one specific client behaviour now explain it and say what to do, instead of calling the property "not supported".
+- New checks from the Emailens engine: an image no inbox can load (a relative path, `file:`, `localhost` or an empty `src`) is an error in every client, and Outlook VML without a 96 pixels-per-inch setting gets a warning. Templates that use local images will see new errors and lower scores.
+- More accurate previews for Outlook Classic layout and dark mode, Outlook for Mac (which now has a dark mode and no longer loads web fonts), Proton Mail and Yahoo Mail. Outlook Classic now shows only the matching branch of version conditions such as `[if gte mso 16]`.
+- Suppression comments, and the quick fix that writes them, now work for rule codes that contain a space, such as `<img src>` and `@media hover`.
 
 ## 1.0 — October 2026
 

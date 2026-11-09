@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { CSS_SUPPORT } from "@emailens/engine";
 import {
   commentSyntaxAt,
   disableComment,
@@ -43,6 +44,23 @@ describe("reading directives out of a document", () => {
   test("several rules, separated however someone felt like", () => {
     const found = parseDirectives(`<!-- emailens-disable-file border-radius, gap  transition -->`);
     expect(found[0].rules).toEqual(["border-radius", "gap", "transition"]);
+  });
+
+  test("a rule code with a space in it stays one rule", () => {
+    const found = parseDirectives(
+      `<!-- leadlens-disable-file <img src>, gap <input type="text"> @media hover -- hosted on send -->`,
+    );
+    expect(found[0].rules).toEqual(["<img src>", "gap", `<input type="text">`, "@media hover"]);
+    expect(found[0].reason).toBe("hosted on send");
+  });
+
+  test("@media joins the next word only when that makes a real rule code", () => {
+    expect(parseDirectives(`<!-- leadlens-disable-file @media gap -->`)[0].rules).toEqual(["@media", "gap"]);
+    expect(parseDirectives(`<!-- leadlens-disable-file @media -->`)[0].rules).toEqual(["@media"]);
+  });
+
+  test("extra spaces inside a tag code are ignored", () => {
+    expect(parseDirectives(`<!-- leadlens-disable-file <img   src> -->`)[0].rules).toEqual(["<img src>"]);
   });
 
   test("a reason is kept and is not mistaken for a rule", () => {
@@ -231,6 +249,17 @@ describe("which comment to write", () => {
       const parsed = parseDirectives(comment);
       expect([syntax, parsed[0]?.kind]).toEqual([syntax, "file"]);
       expect(suppressionsIn(comment).suppresses("no-unsubscribe")).toBe(true);
+    }
+  });
+
+  test("the Quick Fix comment silences every engine rule code, spaces and all", () => {
+    // `<img src>` is reported by the engine but has no support-table entry.
+    const codes = [...Object.keys(CSS_SUPPORT), "<img src>"];
+    for (const code of codes) {
+      for (const syntax of ["html", "css"] as const) {
+        const comment = `${disableComment(code, syntax)}\n<p>x</p>`;
+        expect([code, syntax, suppressionsIn(comment).suppresses(code, 2)]).toEqual([code, syntax, true]);
+      }
     }
   });
 });
