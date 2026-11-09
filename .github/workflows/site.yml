@@ -1,7 +1,7 @@
 name: Site
 
 # Builds the website whenever it, or the documentation it publishes, changes.
-# Vercel deploys it; this catches a broken build in the pull request itself.
+# Cloudflare Workers Builds deploys it; this catches a broken build in the pull request itself.
 on:
   push:
     branches: [main]
@@ -27,8 +27,8 @@ jobs:
       - uses: actions/checkout@v7
 
       # Astro runs on Node, and its releases raise the minimum version; the
-      # runner's preinstalled Node can lag behind. Vercel reads the same
-      # major version from `engines` in site/package.json.
+      # runner's preinstalled Node can lag behind. Workers Builds uses Node 24
+      # by default, the major version `engines` in site/package.json names.
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
@@ -43,11 +43,20 @@ jobs:
       # Fails if a docs page links somewhere the site can't publish.
       - run: bun run build
 
-      # Both page layouts must count visits, and nothing may block indexing.
-      - name: Check analytics and indexing
+      # Cloudflare serves the headers file and adds the analytics script, which
+      # the security policy must allow. Nothing may block indexing, and each
+      # page keeps the tags search results and link previews use.
+      - name: Check headers and indexing
         run: |
-          grep -q '<vercel-analytics' dist/index.html
-          grep -q '<vercel-analytics' dist/docs/index.html
-          ! grep -q 'noindex' dist/index.html dist/docs/index.html
+          grep -q "connect-src 'self';" dist/_headers
+          grep -q 'https://static.cloudflareinsights.com' dist/_headers
+          # (`! grep` can't fail a step: the shell ignores a negated command's failure)
+          if grep -rl 'noindex' dist --include='*.html'; then echo 'a page asks not to be indexed'; exit 1; fi
           grep -q 'Sitemap:' dist/robots.txt
-          echo "analytics on both layouts; pages indexable"
+          for page in dist/index.html dist/docs/index.html dist/docs/linting/index.html dist/changelog/index.html; do
+            grep -q '<link rel="canonical" href="https://leadlens.harrisonjennings.au/' "$page"
+            grep -q '<meta name="description"' "$page"
+            grep -q '<meta property="og:image"' "$page"
+          done
+          grep -q '<meta property="og:title" content="Lint HTML email' dist/docs/linting/index.html
+          echo "headers in place; pages indexable, with canonical, description and social tags"

@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Static files only: no Worker script, so every request is a free static asset request. Cloudflare
+  // Workers Builds builds and deploys this from GitHub (README.md, Deployment).
+  "name": "leadlens",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Folders answer at a trailing slash (astro.config.mjs: trailingSlash "always"); /docs/linting and
+    // /docs/linting/index.html redirect there, so each page has one address. Missing files get 404.html
+    // with a 404.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+  // Production is reached only through the leadlens.harrisonjennings.au route, never a public workers.dev
+  // copy that search engines could index. Branch previews and version addresses are on workers.dev,
+  // behind Cloudflare Access.
+  "workers_dev": false,
+  "preview_urls": true,
+  // Required by `wrangler preview`, which Workers Builds runs for every other branch. Empty: the site has
+  // no bindings, and assets and compatibility settings stay at the top level.
+  "previews": {},
+}

@@ -1,0 +1,162 @@
+name: Deployed version
+
+# Did the deploy work? Cloudflare Workers Builds builds and deploys the website in site/: main to production, other
+# branches to previews. This never deploys anything itself.
+#
+# When Cloudflare finishes a build it posts a "Workers Builds: leadlens" check on the commit, and GitHub
+# runs this workflow for it (check_run). Each build is recorded as a GitHub deployment
+# (site/scripts/record-deployment.sh), so it shows in the repository's Deployments panel and on its pull request:
+# - another branch: a Preview deployment, with the branch's Preview URL (site/scripts/preview-url.sh);
+# - main: this smoke-tests that exact version at its own address on workers.dev
+#   (site/scripts/smoke-test.sh), and records a Production deployment that succeeds only if the test passes.
+#   Bot Fight Mode challenges GitHub's runners on the real domain, and workers.dev is outside the zone's
+#   bot protection. Cloudflare Access protects the address, so the preview-checks service token goes with
+#   each request (repository secrets CF_ACCESS_CLIENT_ID and CF_ACCESS_CLIENT_SECRET).
+# check_run runs this file as it is on main, so changes here take effect once merged.
+#
+# Every app's finished check starts this workflow (check_run can't be filtered by name), so a run for
+# another check, such as "typecheck, test, package", skips its job.
+# Run it by hand (Actions → Deployed version → Run workflow) to repeat the test for main's latest commit,
+# or give a Version ID from the Worker's Deployments tab, for a build Cloudflare posted no check for (a
+# retried build isn't linked to a commit).
+# A failure emails the repository owner; roll back from the Worker's Deployments tab in Cloudflare.
+run-name: >-
+  ${{ github.event_name == 'check_run' && format('{0}: {1}', github.event.check_run.name, github.event.check_run.check_suite.head_branch)
+  || 'Smoke test by hand' }}
+
+on:
+  check_run:
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version ID to test (optional; default is the version Cloudflare deployed for main's latest commit)
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    name: Record the preview
+    if: >-
+      github.event_name == 'check_run'
+      && github.event.check_run.name == 'Workers Builds: leadlens'
+      && github.event.check_run.check_suite.head_branch != 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      deployments: write
+    concurrency:
+      group: preview-${{ github.event.check_run.check_suite.head_branch }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Record the deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          # Passed as data, never pasted into the script: branch names can contain anything.
+          BRANCH: ${{ github.event.check_run.check_suite.head_branch }}
+          SHA: ${{ github.event.check_run.head_sha }}
+          CONCLUSION: ${{ github.event.check_run.conclusion }}
+        run: |
+          url=$(bash site/scripts/preview-url.sh "$BRANCH")
+          id=$(bash site/scripts/record-deployment.sh start Preview "$BRANCH" "$SHA")
+          [ -n "$id" ] || exit 0
+          if [ "$CONCLUSION" = success ]; then
+            bash site/scripts/record-deployment.sh finish "$id" success "$url"
+          else
+            bash site/scripts/record-deployment.sh finish "$id" failure "$url"
+            echo "::error::Cloudflare's preview build didn't succeed: $CONCLUSION"
+            exit 1
+          fi
+
+  smoke:
+    name: Smoke test the deployed version
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      || (github.event.check_run.name == 'Workers Builds: leadlens'
+      && github.event.check_run.check_suite.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      checks: read # reads the Version ID from Cloudflare's check
+      deployments: write # records the Production deployment
+    concurrency:
+      group: production
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      SHA: ${{ github.event.check_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Recorded for Cloudflare's builds of main, and for runs by hand on main without a Version ID
+      # (which test main's latest commit). A Version ID given by hand may not match any commit.
+      - name: Start the deployment record
+        id: record
+        if: github.ref_name == 'main' && inputs.version == ''
+        run: echo "id=$(bash site/scripts/record-deployment.sh start Production main "$SHA")" >> "$GITHUB_OUTPUT"
+
+      - name: Check Cloudflare's deploy succeeded
+        if: github.event_name == 'check_run'
+        env:
+          CONCLUSION: ${{ github.event.check_run.conclusion }}
+        run: |
+          if [ "$CONCLUSION" != success ]; then
+            echo "::error::Cloudflare's build or deploy didn't succeed: $CONCLUSION"
+            exit 1
+          fi
+
+      # The version's address is https://<first 8 characters of its Version ID>-leadlens.<account's
+      # workers.dev subdomain>, from the Version ID given, or in Cloudflare's check.
+      - name: Find the version's address
+        id: version
+        env:
+          # Passed as data, never pasted into the script.
+          GIVEN: ${{ inputs.version }}
+        run: |
+          if [ -n "$GIVEN" ]; then
+            if ! [[ "$GIVEN" =~ ^[0-9a-f]{8}(-[0-9a-f-]+)?$ ]]; then
+              echo "::error::Not a Version ID: give one from the Worker's Deployments tab, such as 890b04e9-b130-…"
+              exit 1
+            fi
+            version=$GIVEN
+          else
+            summary=$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+              --jq '[.check_runs[] | select(.name == "Workers Builds: leadlens")][0].output.summary // ""')
+            version=$(printf '%s' "$summary" | grep -oE 'Version ID: [0-9a-f-]+' | head -1 | cut -d' ' -f3)
+            if [ -z "$version" ]; then
+              echo "::error::No Version ID in Cloudflare's check for $SHA. Run this by hand with the Version ID from the Worker's Deployments tab."
+              exit 1
+            fi
+          fi
+          url="https://${version:0:8}-leadlens.harrisonjennings-au.workers.dev"
+          echo "Testing $url"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke-test it
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          URL: ${{ steps.version.outputs.url }}
+        run: bash site/scripts/smoke-test.sh "$URL"
+
+      - name: Finish the deployment record
+        if: always() && steps.record.outputs.id != ''
+        env:
+          ID: ${{ steps.record.outputs.id }}
+          STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+        run: bash site/scripts/record-deployment.sh finish "$ID" "$STATE" https://leadlens.harrisonjennings.au/
