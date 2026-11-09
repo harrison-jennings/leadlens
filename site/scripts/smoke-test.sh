@@ -61,7 +61,12 @@ check 'and no other hosts to connect' has "connect-src 'self';" "$headers"
 check 'HSTS header' has 'strict-transport-security:' "$headers"
 check 'nosniff header' has 'x-content-type-options: nosniff' "$headers"
 check 'frame header' has 'x-frame-options: deny' "$headers"
-check 'nothing asks search engines to skip the page' bash -c '! grep -q "x-robots-tag" <<<"$1" && ! grep -q "noindex" <<<"$2"' _ "$headers" "$home"
+check 'the page asks search engines to index it' bash -c '! grep -q "noindex" <<<"$1"' _ "$home"
+# Cloudflare sends X-Robots-Tag: noindex from every workers.dev address, so search engines skip previews
+# and versions; only the real domain must be free of it.
+if [[ "$base" != *.workers.dev ]]; then
+  check 'and no header asks them to skip it' bash -c '! grep -q "x-robots-tag" <<<"$1"' _ "$headers"
+fi
 check 'robots.txt names the sitemap' has "Sitemap: $site/sitemap-index.xml" "$robots"
 check 'the sitemap answers 200' [ "$(status /sitemap-index.xml)" = 200 ]
 
