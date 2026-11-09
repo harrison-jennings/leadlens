@@ -108,6 +108,9 @@ for (const [file, slug] of Object.entries(DOCS)) {
   if (slug) trail.push([title, `${SITE_URL}/docs/${slug}/`]);
   const head = [
     { tag: "title", content: searchTitle },
+    // Link previews show the same title as search results, not the short sidebar label.
+    { tag: "meta", attrs: { property: "og:title", content: searchTitle } },
+    { tag: "meta", attrs: { name: "twitter:title", content: searchTitle } },
     { tag: "script", attrs: { type: "application/ld+json" }, content: JSON.stringify(breadcrumbs(trail)) },
   ];
   const frontmatter = [

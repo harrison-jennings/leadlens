@@ -1,7 +1,6 @@
 ---
 import "../styles/fonts.css";
 import "../styles/site.css";
-import Analytics from "@vercel/analytics/astro";
 import { SITE_URL, SOCIAL_IMAGE, TAGLINE } from "../data/site.mjs";
 
 interface Props {
@@ -43,6 +42,5 @@ const canonical = hasCanonical ? new URL(Astro.url.pathname, SITE_URL).href : un
   <body class={bodyClass}>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
-    <Analytics />
   </body>
 </html>

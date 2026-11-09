@@ -54,7 +54,7 @@ To mark a significant release:
 
 ## Website
 
-The website deploys from `site/` on Vercel, separately from extension builds; a website change never publishes an update. Documentation and changelog changes reach it automatically, because the site is built from `docs/` and `CHANGELOG.md`.
+The website deploys from `site/` on Cloudflare Workers, separately from extension builds; a website change never publishes an update. Documentation and changelog changes reach it automatically, because the site is built from `docs/` and `CHANGELOG.md`.
 
 ## Before releasing
 

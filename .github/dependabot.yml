@@ -25,7 +25,7 @@ updates:
       prefix: "Engine"
 
   # The website's packages (Astro, Starlight, fonts): one grouped PR a month.
-  # Vercel builds a preview for it, and the Site workflow checks the build.
+  # Cloudflare builds a preview for it, and the Site workflow checks the build.
   - package-ecosystem: "bun"
     directory: "/site"
     schedule:

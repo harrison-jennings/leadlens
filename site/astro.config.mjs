@@ -4,7 +4,9 @@ import { REPO_URL, SITE_URL, SOCIAL_IMAGE, TAGLINE } from "./src/data/site.mjs";
 
 export default defineConfig({
   site: SITE_URL,
-  trailingSlash: "ignore",
+  // Cloudflare serves each page at its folder address with a trailing slash and redirects other forms
+  // there (wrangler.jsonc), so the dev server and links use the same form.
+  trailingSlash: "always",
   integrations: [
     starlight({
       title: "Leadlens",
@@ -18,7 +20,6 @@ export default defineConfig({
         // The docs header draws the live, blinking mark rather than a static lockup.
         SiteTitle: "./src/components/StarlightSiteTitle.astro",
         SocialIcons: "./src/components/StarlightHeaderLinks.astro",
-        Footer: "./src/components/StarlightFooter.astro",
       },
       head: [
         { tag: "link", attrs: { rel: "icon", type: "image/png", sizes: "32x32", href: "/generated/favicon-32.png" } },

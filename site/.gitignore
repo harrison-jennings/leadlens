@@ -1,7 +1,7 @@
 node_modules/
 dist/
 .astro/
-.vercel/
+.wrangler/
 
 # Written by scripts/sync-content.mjs from ../docs, ../CHANGELOG.md,
 # ../docs/brand and ../samples/images. Never edit these copies.
