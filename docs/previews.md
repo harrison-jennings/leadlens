@@ -66,7 +66,7 @@ In the comparison view, **Save set** stores the current group of clients under a
 - CSS `url(…)` in `style` attributes and `<style>` blocks;
 - Outlook VML image fills.
 
-Paths are resolved from the email's own folder, or from the workspace root when they start with `/`. Only files inside the workspace are shown, or beside a template you've chosen outside it. The preview labels images that are missing or that point outside those folders. Local paths are a preview convenience: they still need replacing with hosted URLs before an email is sent.
+Paths are resolved from the email's own folder, or from the workspace root when they start with `/`. Only files inside the workspace are shown, or beside a template you've chosen outside it. The preview labels images that are missing or that point outside those folders. Local paths are a preview convenience: they still need replacing with hosted URLs before an email is sent, and until then [linting](linting.md) reports each one as an error in every client.
 
 **Remote images** (anything on `http://` or `https://`) are blocked by default, because loading an email's images can trigger its tracking pixels. Click **Remote images** in the preview to load them for the current session, or turn on `leadlens.preview.loadRemoteImages`.
 

@@ -16,6 +16,8 @@
  * nothing to tolerate. Which one to *write* is `commentSyntaxAt`'s job.
  */
 
+import { CSS_SUPPORT } from "@emailens/engine";
+
 /** What a directive does. */
 export type DirectiveKind = "file" | "next-line" | "line" | "disable" | "enable";
 
@@ -61,10 +63,7 @@ export function parseDirectives(text: string): Directive[] {
   for (const match of text.matchAll(DIRECTIVE)) {
     const [whole, prefix, word, tail] = match;
     const [names, reason] = splitReason(tail ?? "");
-    const rules = names
-      .split(/[\s,]+/)
-      .map((name) => name.trim())
-      .filter(Boolean);
+    const rules = ruleNames(names);
 
     found.push({
       prefix: prefix as Directive["prefix"],
@@ -77,6 +76,41 @@ export function parseDirectives(text: string): Directive[] {
     });
   }
   return found;
+}
+
+/**
+ * `@media` rule codes that name a feature, such as `@media hover`, as their
+ * words. Taken from the engine so a feature it adds is recognised here too.
+ */
+const MEDIA_FEATURES = new Set(
+  Object.keys(CSS_SUPPORT)
+    .filter((code) => code.startsWith("@media "))
+    .map((code) => code.slice("@media ".length)),
+);
+
+/**
+ * Split a directive's rule list on commas and spaces, keeping whole the rule
+ * codes that contain a space, so a code copied from the Problems panel works:
+ *
+ * - a tag code is everything from `<` to `>`: `<img src>`, `<input type="text">`;
+ * - `@media` and the next word are one code when the engine has that code, so
+ *   `@media hover` is one rule and `@media gap` is still two.
+ */
+function ruleNames(list: string): string[] {
+  // Bounded, so a comment full of unclosed `<` stays linear.
+  const words = list.match(/<[^<>]{0,100}>|[^\s,]+/g) ?? [];
+  const rules: string[] = [];
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    if (word.startsWith("<")) {
+      rules.push(word.replace(/\s+/g, " ").trim());
+    } else if (word === "@media" && MEDIA_FEATURES.has(words[i + 1] ?? "")) {
+      rules.push(`@media ${words[++i]}`);
+    } else {
+      rules.push(word);
+    }
+  }
+  return rules;
 }
 
 /** `border-radius -- deliberate, Outlook is 2% of this list` → the two halves. */

@@ -8,8 +8,8 @@ Findings are grouped into categories. Each can be turned off with `leadlens.skip
 
 | Category | What it covers | Example rule codes |
 |---|---|---|
-| `compatibility` | HTML and CSS that a client doesn't support or supports only partly, per client. | `border-radius`, `display:flex`, `gap` |
-| `vml` | Outlook VML that won't render as intended, such as unbalanced tags, nested shapes or invalid dimensions. | `vml-unbalanced-tag`, `vml-arcsize-range` |
+| `compatibility` | HTML and CSS that a client doesn't support or supports only partly, per client, and images no inbox can load: a relative path, `file:`, `localhost` or an empty `src`. | `border-radius`, `display:flex`, `gap`, `<img src>` |
+| `vml` | Outlook VML that won't render as intended, such as unbalanced tags, nested shapes, invalid dimensions, or a missing 96 pixels-per-inch setting that lets display scaling crop buttons. | `vml-unbalanced-tag`, `vml-arcsize-range`, `vml-pixels-per-inch` |
 | `styleSurvival` | Styles that clients strip, such as `<style>` blocks or attributes removed by webmail. | |
 | `accessibility` | Missing `lang`, `alt` text, document title and charset, and similar problems for assistive technology. | `missing-lang`, `img-missing-alt` |
 | `darkContrast` | Text that becomes hard to read when a client applies dark mode. | `low-contrast-dark` |
@@ -83,7 +83,7 @@ When a finding is deliberate, silence it in the file and give a reason after `--
 | `leadlens-disable-file <rules>` | The named rules anywhere in the file. |
 
 - Leave out the rules to silence everything in that scope.
-- List several rules separated by commas or spaces.
+- List several rules separated by commas or spaces. Write a code that contains a space, such as `<img src>` or `@media hover`, as the Problems panel shows it.
 - Inside `<style>` blocks and stylesheets, use CSS comments: `/* leadlens-disable-next-line gap */`.
 - Findings about the whole document can only be silenced with `leadlens-disable-file`.
 
