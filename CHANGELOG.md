@@ -13,6 +13,8 @@ Each build's exact changes, including Emailens engine updates, are listed in its
 - New checks from the Emailens engine: an image no inbox can load (a relative path, `file:`, `localhost` or an empty `src`) is an error in every client, and Outlook VML without a 96 pixels-per-inch setting gets a warning. Templates that use local images will see new errors and lower scores.
 - More accurate previews for Outlook Classic layout and dark mode, Outlook for Mac (which now has a dark mode and no longer loads web fonts), Proton Mail and Yahoo Mail. Outlook Classic now shows only the matching branch of version conditions such as `[if gte mso 16]`.
 - Suppression comments, and the quick fix that writes them, now work for rule codes that contain a space, such as `<img src>` and `@media hover`.
+- More accurate previews from the Emailens engine. Outlook (New) loads no web fonts and keeps its desktop layout at every viewport, as the real app does. Outlook Classic no longer fills gradients or background images from `<style>` blocks, and keeps negative side margins on `<div>`s. Gmail applies an email's styles by CSS specificity and gives links without a colour its own blue. Yahoo Mail keeps `background-size` and `opacity`, and ignores `visibility` and `text-shadow`.
+- `unbreakable-string` is now an information note instead of a warning, and `image-container-overflow` no longer reports hidden containers.
 
 ## 1.0 — October 2026
 
