@@ -4,13 +4,13 @@ Run **Leadlens: Open Preview to the Side**, or click the preview button in the e
 
 ## How the simulation works
 
-For each client, Leadlens takes your HTML and applies what that client is documented to do with it:
+For each client, Leadlens takes your HTML and applies what that client is documented or observed to do with it:
 
 - removes or rewrites the CSS and HTML the client doesn't support;
 - resolves Outlook conditional comments and translates supported VML for Outlook on Windows;
 - applies the client's dark-mode treatment when dark mode is on.
 
-The result is shown in a browser view inside VS Code. It's a simulation based on documented behaviour, not a screenshot from the real application: fonts depend on what's installed on your computer, and clients occasionally change their behaviour before the compatibility data catches up.
+The result is shown in a browser view inside VS Code. It's a simulation based on documented and observed behaviour, not a screenshot from the real application: fonts depend on what's installed on your computer, and clients occasionally change their behaviour before the compatibility data catches up.
 
 ## Clients
 
@@ -50,7 +50,7 @@ Each card shows the client's compatibility score and how many issues apply to it
 
 ## Viewport and zoom
 
-- **Viewport** sets the CSS width the email is laid out at, which is what responsive breakpoints respond to. Presets cover 320, 375 and 414 px (mobile), 600 px (desktop) and 768 px (wide), and you can type any width from 240 to 1,600 px.
+- **Viewport** sets the CSS width the email is laid out at, which is what responsive breakpoints respond to. Presets cover 320, 375 and 414 px (mobile), 600 px (desktop) and 768 px (wide), and you can type any width from 240 to 1,600 px. Outlook (New) is the exception: like the real app, it judges width-based media queries at its own window width rather than the reading pane's, so its preview keeps the same layout at every viewport.
 - **Display zoom** scales the preview from 50% to 150% without changing the CSS width, so breakpoints stay where they are.
 
 ## Client sets
